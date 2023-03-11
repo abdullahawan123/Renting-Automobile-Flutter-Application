@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "831683599529",
+    "project_id": "wheel-for-a-while",
+    "storage_bucket": "wheel-for-a-while.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:831683599529:android:cd4941308e8f92a01e1db8",
+        "android_client_info": {
+          "package_name": "com.automobile.wheel_for_a_while"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "831683599529-lgujnm35uotfl67pe3et5ucl5tsu95a2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4mgR4SDOiqqp8dfHhosmVQheA2dIEw9U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "831683599529-lgujnm35uotfl67pe3et5ucl5tsu95a2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

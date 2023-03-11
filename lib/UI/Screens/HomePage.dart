@@ -1,0 +1,80 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:wheel_for_a_while/UI/Authentication/Login.dart';
+import 'package:wheel_for_a_while/UI/Widgets/hexStringToColor.dart';
+import 'package:wheel_for_a_while/UI/utils/utilities.dart';
+
+class Homepage extends StatefulWidget {
+  const Homepage({Key? key}) : super(key: key);
+
+  @override
+  State<Homepage> createState() => _HomepageState();
+}
+
+class _HomepageState extends State<Homepage> {
+  
+  final auth = FirebaseAuth.instance;
+  DateTime backButtonPressed = DateTime.now();
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () => _onBackButtonDoublePressed(context),
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0.0,
+          toolbarHeight: 70,
+          title: const Text("Home Page"),
+          centerTitle: true,
+          automaticallyImplyLeading: false,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [
+                  hexStringToColor("39834B"),
+                  hexStringToColor("00A411"),
+                  hexStringToColor("1C201D"),
+                ], begin: Alignment.topCenter, end: Alignment.bottomCenter
+                ),
+              borderRadius: BorderRadius.circular(30),
+            ),
+          ),
+          actions: [
+            IconButton(onPressed: (){
+              auth.signOut().then((value) {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const Login()));
+              }).onError((error, stackTrace) {
+                Utils().toastMessage(error.toString());
+              });
+            }, icon: const Icon(Icons.logout)),
+            const SizedBox(width: 15,),
+          ],
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: const <Widget>[
+              Text("This is Home Page", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),)
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<bool> _onBackButtonDoublePressed(BuildContext context) async {
+    final difference = DateTime.now().difference(backButtonPressed);
+    backButtonPressed = DateTime.now();
+
+    if (difference >= const Duration(seconds: 2)){
+      Utils().toastMessage1("Click again to close the app");
+      return false;
+    }else{
+      SystemNavigator.pop(animated: true);
+      return true;
+    }
+
+  }
+}
