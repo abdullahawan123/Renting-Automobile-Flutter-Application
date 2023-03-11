@@ -25,7 +25,7 @@ class _HomepageState extends State<Homepage> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0.0,
-          toolbarHeight: 70,
+          toolbarHeight: 60,
           title: const Text("Home Page"),
           centerTitle: true,
           automaticallyImplyLeading: false,
@@ -37,7 +37,10 @@ class _HomepageState extends State<Homepage> {
                   hexStringToColor("1C201D"),
                 ], begin: Alignment.topCenter, end: Alignment.bottomCenter
                 ),
-              borderRadius: BorderRadius.circular(30),
+              borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20)
+              ),
             ),
           ),
           actions: [
