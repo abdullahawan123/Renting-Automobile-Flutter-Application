@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wheel_for_a_while/UI/Authentication/SignUp.dart';
+import 'package:wheel_for_a_while/UI/Authentication/forgot_password.dart';
 import 'package:wheel_for_a_while/UI/Widgets/RoundButton.dart';
 import 'package:wheel_for_a_while/UI/Widgets/imagesWidget.dart';
 import 'package:wheel_for_a_while/UI/Widgets/hexStringToColor.dart';
@@ -170,6 +171,16 @@ class _LoginState extends State<Login> {
                               login();
                             }
                           },
+                        ),
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: TextButton(
+                              onPressed: (){
+                                Navigator.push(context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const ForgetPassword()));
+                              },
+                              child: const Text('Forgot Password?', style: TextStyle(fontSize: 15,color: Colors.white),)),
                         ),
                         SizedBox(height: MediaQuery.of(context).size.height * 0.001,),
                         Row(
