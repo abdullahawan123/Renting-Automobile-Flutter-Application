@@ -81,7 +81,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                        totalRepeatCount: 1,
                        animatedTexts: [
                      RotateAnimatedText(
-                         'WHEEL FOR A\n WHILE', textStyle: const TextStyle(fontFamily: 'ShantellSans', fontWeight: FontWeight.w300, fontStyle: FontStyle.italic),
+                         'WHEEL FOR A WHILE', textStyle: const TextStyle(fontFamily: 'ShantellSans', fontWeight: FontWeight.w300, fontStyle: FontStyle.italic),
                          textAlign: TextAlign.center,
                          rotateOut: false)
                    ]),
