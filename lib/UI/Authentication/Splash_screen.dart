@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -58,17 +57,9 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Center(
-                  child: AnimatedBuilder(
-                      animation: _controller,
-                      builder: (BuildContext context, Widget? child) {
-                        return Transform.rotate(
-                            angle: _controller.value * 2.0 * math.pi,
-                            child: logoWidget('Assets/images/logo-1.png'),
-                  );
-                      }
-                )),
-                SizedBox(height: MediaQuery.of(context).size.height * 0.05,),
+                SafeArea(
+                    child: logoWidget('Assets/images/logo-1.png')
+                  ),
                Center(
                  child: DefaultTextStyle(
                    style: const TextStyle(
@@ -77,14 +68,13 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                      color: Colors.white,
                    ),
                    child: AnimatedTextKit(
-                       repeatForever: false,
-                       totalRepeatCount: 1,
+                     displayFullTextOnTap: true,
+                     pause: const Duration(seconds: 6),
+                     isRepeatingAnimation: false,
                        animatedTexts: [
-                     RotateAnimatedText(
-                         'WHEEL FOR A\n WHILE', textStyle: const TextStyle(fontFamily: 'ShantellSans', fontWeight: FontWeight.w300, fontStyle: FontStyle.italic),
-                         textAlign: TextAlign.center,
-                         rotateOut: false)
-                   ]),
+                         TypewriterAnimatedText('Wheel For A\nWhile', textAlign: TextAlign.center),
+                       ],
+                   )
                  ),
                )
               ],
