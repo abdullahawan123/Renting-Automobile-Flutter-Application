@@ -19,7 +19,7 @@ class Utils {
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 2,
-        backgroundColor: const Color(0xFFCB2B93),
+        backgroundColor: const Color(0xFF03DAC6),
         textColor: Colors.white,
         fontSize: 16.0
     );

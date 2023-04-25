@@ -30,7 +30,7 @@ class RoundButton extends StatelessWidget {
           ),
           child: Center(
             child: loading ?
-            const CircularProgressIndicator(strokeWidth: 4, color: Color(0xFF39834B),):
+            const CircularProgressIndicator(strokeWidth: 4, color: Color(0xFF03DAC6),):
             Text(title, style: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),),
           ),
         ),
