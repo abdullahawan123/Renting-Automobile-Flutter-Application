@@ -65,8 +65,8 @@ class _LoginState extends State<Login> {
         body: Container(
           decoration: BoxDecoration(
               gradient: LinearGradient(colors: [
-                hexStringToColor("39834B"),
-                hexStringToColor("00A411"),
+                hexStringToColor("03DAC6"),
+                hexStringToColor("03DAC6"),
                 hexStringToColor("1C201D"),
               ], begin: Alignment.topCenter, end: Alignment.bottomCenter
               )
