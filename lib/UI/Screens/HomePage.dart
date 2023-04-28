@@ -13,7 +13,7 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  
+
   final auth = FirebaseAuth.instance;
   DateTime backButtonPressed = DateTime.now();
 
@@ -25,10 +25,8 @@ class _HomepageState extends State<Homepage> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0.0,
-          toolbarHeight: 60,
-          title: const Text("Home Page"),
+          title: const Text("Wheel For a While"),
           centerTitle: true,
-          automaticallyImplyLeading: false,
           flexibleSpace: Container(
             decoration: BoxDecoration(
                 gradient: LinearGradient(colors: [
@@ -44,16 +42,51 @@ class _HomepageState extends State<Homepage> {
             ),
           ),
           actions: [
-            IconButton(onPressed: (){
-              auth.signOut().then((value) {
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.notification_add_outlined),
+          ),
+        ],
+      ),
+      drawer: Drawer(
+        child: Column(
+          children: [
+            const UserAccountsDrawerHeader(
+              accountName: Text('Abdullah Awan'),
+              accountEmail: Text('awana2202@gmail.com'),
+              currentAccountPicture: CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Icon(
+                  Icons.person,
+                  size: 50,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.home),
+              title: const Text('Home'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Settings'),
+              onTap: () {},
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.exit_to_app),
+              title: const Text('Log out'),
+              onTap: () {
+                auth.signOut().then((value) {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => const Login()));
-              }).onError((error, stackTrace) {
+                }).onError((error, stackTrace) {
                 Utils().toastMessage(error.toString());
-              });
-            }, icon: const Icon(Icons.logout)),
-            const SizedBox(width: 15,),
+                });
+                },
+            ),
           ],
         ),
+      ),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

@@ -37,7 +37,7 @@ class _SignUpState extends State<SignUp> {
     _auth.createUserWithEmailAndPassword(
         email: emailController.text.toString(),
         password: passwordController.text.toString()).then((value) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => const Homepage()));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => Homepage()));
       setState(() {
         loading = false;
       });
