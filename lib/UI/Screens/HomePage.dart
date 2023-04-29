@@ -1,13 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wheel_for_a_while/UI/Authentication/Login.dart';
 import 'package:wheel_for_a_while/UI/Widgets/hexStringToColor.dart';
 import 'package:wheel_for_a_while/UI/utils/utilities.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({Key? key}) : super(key: key);
-
+  
   @override
   State<Homepage> createState() => _HomepageState();
 }
@@ -16,6 +17,26 @@ class _HomepageState extends State<Homepage> {
 
   final auth = FirebaseAuth.instance;
   DateTime backButtonPressed = DateTime.now();
+  String firstName = '';
+  String lastName = '';
+  String email = '';
+
+  @override
+  void initState() {
+   
+    super.initState();
+    details();
+  }
+
+  void details()async{
+    SharedPreferences sp = await SharedPreferences.getInstance();
+    firstName = sp.getString('first_name') ?? 'User';
+    lastName = sp.getString('last_name') ?? ' name';
+    email = sp.getString('email') ?? 'No Email';
+    setState(() {
+
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,11 +72,10 @@ class _HomepageState extends State<Homepage> {
       drawer: Drawer(
         child: Column(
           children: [
-            const UserAccountsDrawerHeader(
-
-              accountName: Text('Abdullah Awan'),
-              accountEmail: Text('awana2202@gmail.com'),
-              currentAccountPicture: CircleAvatar(
+             UserAccountsDrawerHeader(
+              accountName: Text("$firstName $lastName "),
+              accountEmail: Text(email.toString()),
+              currentAccountPicture: const CircleAvatar(
                 backgroundColor: Colors.white,
                 child: Icon(
                   Icons.person,
@@ -64,16 +84,31 @@ class _HomepageState extends State<Homepage> {
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text('Home'),
+              leading: const Icon(Icons.person_2_outlined),
+              title: const Text('Profile'),
               onTap: () {},
             ),
             ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Settings'),
+              leading: const Icon(Icons.notification_add_outlined),
+              title: const Text('Notification'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(Icons.favorite_border_outlined),
+              title: const Text('Favourite'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(Icons.shopping_cart_outlined),
+              title: const Text('Cart'),
               onTap: () {},
             ),
             const Divider(),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Setting'),
+              onTap: () {},
+            ),
             ListTile(
               leading: const Icon(Icons.exit_to_app),
               title: const Text('Log out'),

@@ -21,8 +21,8 @@ class _LoginState extends State<Login> {
 
   bool loading = false;
   bool visibility = true;
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -31,8 +31,8 @@ class _LoginState extends State<Login> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    emailController.dispose();
-    passwordController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
   }
   
   void login(){
@@ -40,9 +40,9 @@ class _LoginState extends State<Login> {
       loading = true;
     });
     _auth.signInWithEmailAndPassword(
-        email: emailController.text.toString(),
-        password: passwordController.text.toString()).then((value) {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => Homepage()));
+        email: _emailController.text.toString(),
+        password: _passwordController.text.toString()).then((value) {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const Homepage()));
       setState(() {
         loading = false;
       });
@@ -98,7 +98,7 @@ class _LoginState extends State<Login> {
                             child: Column(
                               children: [
                                 TextFormField(
-                                  controller: emailController,
+                                  controller: _emailController,
                                   keyboardType: TextInputType.emailAddress,
                                   cursorColor: Colors.white,
                                   enableSuggestions: true,
@@ -125,7 +125,7 @@ class _LoginState extends State<Login> {
                                 ),
                                 const SizedBox(height: 20),
                                 TextFormField(
-                                  controller: passwordController,
+                                  controller: _passwordController,
                                   obscureText: visibility,
                                   keyboardType: TextInputType.text,
                                   cursorColor: Colors.white,

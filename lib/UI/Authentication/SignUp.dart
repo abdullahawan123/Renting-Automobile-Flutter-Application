@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wheel_for_a_while/UI/Authentication/Login.dart';
 import 'package:flutter/material.dart';
 import 'package:wheel_for_a_while/UI/Widgets/RoundButton.dart';
@@ -22,11 +23,11 @@ class _SignUpState extends State<SignUp> {
 
   bool loading = false;
   final _formKey = GlobalKey<FormState>();
-  final firstNameController = TextEditingController();
-  final lastNameController = TextEditingController();
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  final confirmController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmController = TextEditingController();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -35,9 +36,9 @@ class _SignUpState extends State<SignUp> {
       loading = true;
     });
     _auth.createUserWithEmailAndPassword(
-        email: emailController.text.toString(),
-        password: passwordController.text.toString()).then((value) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => Homepage()));
+        email: _emailController.text.toString(),
+        password: _passwordController.text.toString()).then((value) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const Homepage()));
       setState(() {
         loading = false;
       });
@@ -55,11 +56,11 @@ class _SignUpState extends State<SignUp> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    firstNameController.dispose();
-    lastNameController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
-    confirmController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmController.dispose();
   }
 
   @override
@@ -114,7 +115,7 @@ class _SignUpState extends State<SignUp> {
                           child: Column(
                             children: [
                               TextFormField(
-                                controller: firstNameController,
+                                controller: _firstNameController,
                                 keyboardType: TextInputType.text,
                                 cursorColor: Colors.white,
                                 enableSuggestions: true,
@@ -141,7 +142,7 @@ class _SignUpState extends State<SignUp> {
                               ),
                               SizedBox(height: MediaQuery.of(context).size.height * 0.01,),
                               TextFormField(
-                                controller: lastNameController,
+                                controller: _lastNameController,
                                 keyboardType: TextInputType.text,
                                 cursorColor: Colors.white,
                                 enableSuggestions: true,
@@ -168,7 +169,7 @@ class _SignUpState extends State<SignUp> {
                               ),
                               SizedBox(height: MediaQuery.of(context).size.height * 0.01,),
                               TextFormField(
-                                controller: emailController,
+                                controller: _emailController,
                                 keyboardType: TextInputType.emailAddress,
                                 cursorColor: Colors.white,
                                 enableSuggestions: true,
@@ -195,7 +196,7 @@ class _SignUpState extends State<SignUp> {
                               ),
                               SizedBox(height: MediaQuery.of(context).size.height * 0.01,),
                               TextFormField(
-                                controller: passwordController,
+                                controller: _passwordController,
                                 obscureText: visibility,
                                 keyboardType: TextInputType.text,
                                 cursorColor: Colors.white,
@@ -232,7 +233,7 @@ class _SignUpState extends State<SignUp> {
                               ),
                               SizedBox(height: MediaQuery.of(context).size.height * 0.01,),
                               TextFormField(
-                                controller: confirmController,
+                                controller: _confirmController,
                                 obscureText: visibility1,
                                 keyboardType: TextInputType.text,
                                 cursorColor: Colors.white,
@@ -273,14 +274,24 @@ class _SignUpState extends State<SignUp> {
                       RoundButton(
                         title: "Sign-Up",
                         loading: loading,
-                        onTap: (){
+                        onTap: () async{
                           if(_formKey.currentState!.validate()){
-                            if (passwordController.text.toString() == confirmController.text.toString()){
+                            if (_passwordController.text.toString() == _confirmController.text.toString()){
                               signUp();
                             }else{
                               Utils().toastMessage("Password and Confirm Password should be same. Otherwise you won't be able to continue");
                             }
                           }
+                          String fName = _firstNameController.text;
+                          String lName = _lastNameController.text;
+                          String em =  _emailController.text;
+                          SharedPreferences sp = await SharedPreferences.getInstance();
+                          sp.setString('first_name', fName);
+                          sp.setString('last_name', lName);
+                          sp.setString('email', em);
+                          setState(() {
+
+                          });
                         },
                       ),
                       SizedBox(height: MediaQuery.of(context).size.height * 0.001,),
