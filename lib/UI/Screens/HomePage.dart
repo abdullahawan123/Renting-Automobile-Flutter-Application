@@ -23,7 +23,7 @@ class _HomepageState extends State<Homepage> {
 
   @override
   void initState() {
-   
+
     super.initState();
     details();
   }

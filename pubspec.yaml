@@ -39,7 +39,7 @@ dependencies:
   firebase_core: ^2.7.0
   firebase_storage: ^11.0.14
   firebase_auth: ^4.2.9
-  cloud_firestore: ^4.4.3
+  cloud_firestore:
   fluttertoast: ^8.2.1
   flutter_spinkit: ^5.1.0
   animated_text_kit: ^4.2.2
@@ -71,8 +71,8 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - Assets/images/logo-1.png
-    - Assets/images/bike.jpg
-    - Assets/images/car.png
+    - Assets/images/motorbike.jpeg
+    - Assets/images/cars.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
