@@ -72,7 +72,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                      pause: const Duration(seconds: 6),
                      isRepeatingAnimation: false,
                        animatedTexts: [
-                         TypewriterAnimatedText('Wheel For A\nWhile', textAlign: TextAlign.center),
+                         TypewriterAnimatedText('Wheel For A\n While', textAlign: TextAlign.center),
                        ],
                    )
                  ),

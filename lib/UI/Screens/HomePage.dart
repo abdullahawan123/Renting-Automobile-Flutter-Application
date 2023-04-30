@@ -141,18 +141,20 @@ class _HomepageState extends State<Homepage> {
                 const Text('There are two categories, right now!\navailable for booking....',
                   style: TextStyle(
                       fontSize: 30,
-                      fontWeight: FontWeight.bold
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'ShantellSans',
                   ),
                 ),
                 const SizedBox(height: 50,),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    const Text('Car =>',
+                    const Text('Car ->',
                       style: TextStyle(
                           fontSize: 30,
                           color: Color(0xFF03DAC6),
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'ShantellSans',
                       ),),
               InkWell(
                 onTap: (){
@@ -163,10 +165,19 @@ class _HomepageState extends State<Homepage> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(30),
                     color: Colors.blueGrey[200],
+                    boxShadow: const [
+                      BoxShadow(
+                          color: Color(0xFF03DAC6),
+                          blurRadius: 20,
+                          offset: Offset(5, 10),
+                          spreadRadius: 0.1,
+                          blurStyle: BlurStyle.normal
+                      ),
+                    ],
                   ),
                   child: const Image(
-                    image: AssetImage('Assets/images/cars.jpg'),
-                    fit: BoxFit.cover,
+                    image: AssetImage('Assets/images/car.png'),
+                    fit: BoxFit.fill,
                   )
                     ),
               )
@@ -176,11 +187,12 @@ class _HomepageState extends State<Homepage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    const Text('Bike =>',
+                    const Text('Bike ->',
                       style: TextStyle(
                           fontSize: 30,
                           color: Color(0xFF03DAC6),
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'ShantellSans',
                       ),),
                     InkWell(
                       onTap: (){
@@ -191,9 +203,18 @@ class _HomepageState extends State<Homepage> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(30),
                             color: Colors.blueGrey[200],
+                            boxShadow: const [
+                              BoxShadow(
+                                  color: Color(0xFF03DAC6),
+                                  blurRadius: 20,
+                                  offset: Offset(5, 10),
+                                  spreadRadius: 0.1,
+                                  blurStyle: BlurStyle.normal
+                              ),
+                            ],
                           ),
                           child: const Image(
-                            image: AssetImage('Assets/images/motorbike.jpeg'),
+                            image: AssetImage('Assets/images/motorbike.jpg'),
                             fit: BoxFit.cover,
                           )
                       ),

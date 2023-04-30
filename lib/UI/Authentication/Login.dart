@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wheel_for_a_while/UI/Authentication/SignUp.dart';
 import 'package:wheel_for_a_while/UI/Authentication/forgot_password.dart';
+import 'package:wheel_for_a_while/UI/BO_Screens/BO_Login.dart';
 import 'package:wheel_for_a_while/UI/Widgets/RoundButton.dart';
 import 'package:wheel_for_a_while/UI/Widgets/imagesWidget.dart';
 import 'package:wheel_for_a_while/UI/Widgets/hexStringToColor.dart';
@@ -162,7 +163,7 @@ class _LoginState extends State<Login> {
                                 ),
                               ],
                             )),
-                        SizedBox(height: MediaQuery.of(context).size.height * 0.05,),
+                        const SizedBox(height: 10),
                         RoundButton(
                           title: "Login",
                           loading: loading,
@@ -182,7 +183,7 @@ class _LoginState extends State<Login> {
                               },
                               child: const Text('Forgot Password?', style: TextStyle(fontSize: 15,color: Colors.white),)),
                         ),
-                        SizedBox(height: MediaQuery.of(context).size.height * 0.001,),
+                        const SizedBox(height: 5),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -195,7 +196,29 @@ class _LoginState extends State<Login> {
                                 },
                                 child: const Text('Sign-Up', style: TextStyle(fontSize: 15),)),
                           ],
-                        )
+                        ),
+                        const SizedBox(height: 10,),
+                        Row(
+                            children: const <Widget>[
+                              Expanded(
+                                  child: Divider(color: Colors.white70,)
+                              ),
+
+                              Text("OR Login AS", style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'ShantellSans',
+                              ),),
+
+                              Expanded(
+                                  child: Divider(color: Colors.white70,)
+                              ),
+                            ]
+                        ),
+                        const SizedBox(height: 5,),
+                        RoundButton(title: 'BUSINESS OWNER', onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const BO_Login()));
+                        })
                       ],
                     ),
                   ]
