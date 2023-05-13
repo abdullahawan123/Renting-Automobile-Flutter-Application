@@ -47,6 +47,7 @@ class _SignUpState extends State<SignUp> {
           .then((value) => {postDetailsToFirestore(email, role)})
           .catchError((e){
             Utils().toastMessage(e.toString());
+
       });
     }
   }
