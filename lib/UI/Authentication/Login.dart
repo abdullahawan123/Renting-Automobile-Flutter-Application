@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wheel_for_a_while/UI/Authentication/SignUp.dart';
 import 'package:wheel_for_a_while/UI/Authentication/forgot_password.dart';
+import 'package:wheel_for_a_while/UI/BO_Screens/BO_HomePage.dart';
 import 'package:wheel_for_a_while/UI/Widgets/RoundButton.dart';
 import 'package:wheel_for_a_while/UI/Widgets/imagesWidget.dart';
 import 'package:wheel_for_a_while/UI/Widgets/hexStringToColor.dart';
@@ -21,8 +23,8 @@ class _LoginState extends State<Login> {
 
   bool loading = false;
   bool visibility = true;
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -31,36 +33,87 @@ class _LoginState extends State<Login> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    emailController.dispose();
-    passwordController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
   }
   
-  void login(){
-    setState(() {
-      loading = true;
+  // void login(){
+  //   setState(() {
+  //     loading = true;
+  //   });
+  //   _auth.signInWithEmailAndPassword(
+  //       email: _emailController.text.toString(),
+  //       password: _passwordController.text.toString()).then((value) {
+  //         Navigator.push(context, MaterialPageRoute(builder: (context) => const Homepage()));
+  //     setState(() {
+  //       loading = false;
+  //     });
+  //   }).onError((error, stackTrace) {
+  //     setState(() {
+  //       loading = false;
+  //     });
+  //     Utils().toastMessage(error.toString());
+  //   });
+  // }
+
+  void route() {
+    User? user = FirebaseAuth.instance.currentUser;
+    var keyK = FirebaseFirestore.instance
+        .collection('users')
+        .doc(user!.uid)
+        .get()
+        .then((DocumentSnapshot documentSnapshot) {
+      if (documentSnapshot.exists) {
+        if (documentSnapshot.get('role') == "Business Owner") {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>  const BO_HomePage(),
+            ),
+          );
+        }else{
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>  const Homepage(),
+            ),
+          );
+        }
+      } else {
+        Utils().toastMessage("Document doesn't exist in the database");
+        debugPrint(_auth.toString());
+      }
     });
-    _auth.signInWithEmailAndPassword(
-        email: emailController.text.toString(),
-        password: passwordController.text.toString()).then((value) {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => Homepage()));
-      setState(() {
-        loading = false;
-      });
-    }).onError((error, stackTrace) {
-      setState(() {
-        loading = false;
-      });
-      Utils().toastMessage(error.toString());
-    });
+  }
+
+  void signIn(String email, String password) async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        UserCredential userCredential =
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+        debugPrint(userCredential.toString());
+        route();
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'user-not-found') {
+          Utils().toastMessage1("No user found for that email.");
+        } else if (e.code == 'wrong-password') {
+          Utils().toastMessage1("Wrong password provided for that user.");
+        }
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    // TODO: implement build
     return WillPopScope(
       onWillPop: ()async{
-      SystemNavigator.pop();
-      return true;
-    },
+        SystemNavigator.pop();
+        return true;
+      },
       child: Scaffold(
         body: Container(
           decoration: BoxDecoration(
@@ -98,7 +151,7 @@ class _LoginState extends State<Login> {
                             child: Column(
                               children: [
                                 TextFormField(
-                                  controller: emailController,
+                                  controller: _emailController,
                                   keyboardType: TextInputType.emailAddress,
                                   cursorColor: Colors.white,
                                   enableSuggestions: true,
@@ -125,7 +178,7 @@ class _LoginState extends State<Login> {
                                 ),
                                 const SizedBox(height: 20),
                                 TextFormField(
-                                  controller: passwordController,
+                                  controller: _passwordController,
                                   obscureText: visibility,
                                   keyboardType: TextInputType.text,
                                   cursorColor: Colors.white,
@@ -162,13 +215,13 @@ class _LoginState extends State<Login> {
                                 ),
                               ],
                             )),
-                        SizedBox(height: MediaQuery.of(context).size.height * 0.05,),
+                        const SizedBox(height: 10),
                         RoundButton(
                           title: "Login",
                           loading: loading,
                           onTap: (){
                             if(_formKey.currentState!.validate()){
-                              login();
+                              signIn(_emailController.text, _passwordController.text);
                             }
                           },
                         ),
@@ -182,7 +235,7 @@ class _LoginState extends State<Login> {
                               },
                               child: const Text('Forgot Password?', style: TextStyle(fontSize: 15,color: Colors.white),)),
                         ),
-                        SizedBox(height: MediaQuery.of(context).size.height * 0.001,),
+                        const SizedBox(height: 5),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -195,7 +248,7 @@ class _LoginState extends State<Login> {
                                 },
                                 child: const Text('Sign-Up', style: TextStyle(fontSize: 15),)),
                           ],
-                        )
+                        ),
                       ],
                     ),
                   ]
@@ -207,3 +260,4 @@ class _LoginState extends State<Login> {
     );
   }
 }
+
