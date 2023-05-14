@@ -36,25 +36,6 @@ class _LoginState extends State<Login> {
     _emailController.dispose();
     _passwordController.dispose();
   }
-  
-  // void login(){
-  //   setState(() {
-  //     loading = true;
-  //   });
-  //   _auth.signInWithEmailAndPassword(
-  //       email: _emailController.text.toString(),
-  //       password: _passwordController.text.toString()).then((value) {
-  //         Navigator.push(context, MaterialPageRoute(builder: (context) => const Homepage()));
-  //     setState(() {
-  //       loading = false;
-  //     });
-  //   }).onError((error, stackTrace) {
-  //     setState(() {
-  //       loading = false;
-  //     });
-  //     Utils().toastMessage(error.toString());
-  //   });
-  // }
 
   void route() {
     User? user = FirebaseAuth.instance.currentUser;
@@ -71,6 +52,9 @@ class _LoginState extends State<Login> {
               builder: (context) =>  const BO_HomePage(),
             ),
           );
+          setState(() {
+            loading = false ;
+          });
         }else{
           Navigator.pushReplacement(
             context,
@@ -78,8 +62,14 @@ class _LoginState extends State<Login> {
               builder: (context) =>  const Homepage(),
             ),
           );
+          setState(() {
+            loading = false ;
+          });
         }
       } else {
+        setState(() {
+          loading = false ;
+        });
         Utils().toastMessage("Document doesn't exist in the database");
         debugPrint(_auth.toString());
       }
@@ -87,6 +77,9 @@ class _LoginState extends State<Login> {
   }
 
   void signIn(String email, String password) async {
+    setState(() {
+      loading = true ;
+    });
     if (_formKey.currentState!.validate()) {
       try {
         UserCredential userCredential =
@@ -98,9 +91,15 @@ class _LoginState extends State<Login> {
         route();
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found') {
-          Utils().toastMessage1("No user found for that email.");
+          setState(() {
+            loading = false ;
+          });
+          Utils().toastMessage("No user found for that email.");
         } else if (e.code == 'wrong-password') {
-          Utils().toastMessage1("Wrong password provided for that user.");
+          setState(() {
+            loading = false ;
+          });
+          Utils().toastMessage("Wrong password provided for that user.");
         }
       }
     }
