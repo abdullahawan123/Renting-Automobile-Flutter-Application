@@ -7,6 +7,7 @@ import 'package:wheel_for_a_while/UI/Screens/BikeOption.dart';
 import 'package:wheel_for_a_while/UI/Screens/CarOption.dart';
 import 'package:wheel_for_a_while/UI/Screens/Notification.dart';
 import 'package:wheel_for_a_while/UI/Widgets/hexStringToColor.dart';
+import 'package:wheel_for_a_while/UI/utils/BackButton.dart';
 import 'package:wheel_for_a_while/UI/utils/utilities.dart';
 
 class Homepage extends StatefulWidget {
@@ -19,7 +20,6 @@ class Homepage extends StatefulWidget {
 class _HomepageState extends State<Homepage> {
 
   final auth = FirebaseAuth.instance;
-  DateTime backButtonPressed = DateTime.now();
   String firstName = '';
   String lastName = '';
   String email = '';
@@ -44,7 +44,7 @@ class _HomepageState extends State<Homepage> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () => _onBackButtonDoublePressed(context),
+      onWillPop: () => BackButtonDoublePressed().onBackButtonDoublePressed(context),
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -229,17 +229,5 @@ class _HomepageState extends State<Homepage> {
     );
   }
 
-  Future<bool> _onBackButtonDoublePressed(BuildContext context) async {
-    final difference = DateTime.now().difference(backButtonPressed);
-    backButtonPressed = DateTime.now();
 
-    if (difference >= const Duration(seconds: 2)){
-      Utils().toastMessage1("Click again to close the app");
-      return false;
-    }else{
-      SystemNavigator.pop(animated: true);
-      return true;
-    }
-
-  }
 }
