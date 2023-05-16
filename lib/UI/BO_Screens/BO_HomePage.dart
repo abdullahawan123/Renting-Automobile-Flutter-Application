@@ -67,7 +67,7 @@ class _BO_HomePageState extends State<BO_HomePage> with SingleTickerProviderStat
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const BO_Details()),
+                      MaterialPageRoute(builder: (context) => BO_Details()),
                     );
                   },
                   child: const Icon(Icons.arrow_forward),
