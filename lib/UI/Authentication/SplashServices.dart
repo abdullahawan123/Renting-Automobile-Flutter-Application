@@ -11,19 +11,29 @@ class SplashServices {
   Future<void> isLogin(BuildContext context) async {
     final auth = FirebaseAuth.instance;
     final user = auth.currentUser;
-    DocumentSnapshot<Map<String, dynamic>> document = await FirebaseFirestore.instance.collection('users').doc(user!.uid).get();
-    String userRole = document.data()!['role'];
+    if (user != null) {
+      DocumentSnapshot<Map<String, dynamic>> document =
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
 
+      if (document.exists) {
+        String? userRole = document.data()?['role'] as String?;
 
-    // ignore: unnecessary_null_comparison
-    if(user != null){
-      Timer(const Duration (milliseconds: 3700),
-              () => Navigator.push(context, MaterialPageRoute(builder: (context) => userRole == 'User'? const Homepage() : BO_HomePage()))
-      );
-    }else{
-      Timer(const Duration (seconds: 3),
-              () => Navigator.push(context, MaterialPageRoute(builder: (context) => const Login()))
-      );
+        Timer(const Duration(milliseconds: 3700), () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => userRole == 'User' ? const Homepage() : BO_HomePage()),
+          );
+        });
+      } else {
+        // Handle the case when the document does not exist
+      }
+    } else {
+      Timer(const Duration(seconds: 3), () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const Login()),
+        );
+      });
     }
   }
 }

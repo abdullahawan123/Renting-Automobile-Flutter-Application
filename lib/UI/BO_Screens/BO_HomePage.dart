@@ -40,6 +40,7 @@ class _BO_HomePageState extends State<BO_HomePage> with SingleTickerProviderStat
       onWillPop: ()=> BackButtonDoublePressed().onBackButtonDoublePressed(context),
       child: Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: const Text('Business Owner'),
           actions: [
             IconButton(onPressed: (){

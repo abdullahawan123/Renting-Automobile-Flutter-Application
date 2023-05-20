@@ -39,7 +39,8 @@ dependencies:
   firebase_core: ^2.7.0
   firebase_storage: ^11.0.14
   firebase_auth: ^4.2.9
-  cloud_firestore:
+  cloud_firestore: ^4.7.1
+  firebase_database: ^10.2.1
   fluttertoast: ^8.2.1
   flutter_spinkit: ^5.1.0
   animated_text_kit: ^4.2.2

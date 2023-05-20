@@ -2,9 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:path/path.dart' as path;
-import 'package:carousel_slider/carousel_slider.dart';
+import 'package:wheel_for_a_while/UI/utils/utilities.dart';
 
 class BO_Details extends StatefulWidget {
   @override
@@ -12,128 +10,21 @@ class BO_Details extends StatefulWidget {
 }
 
 class _BO_DetailsState extends State<BO_Details> {
-  List<File> _selectedImages = [];
-  List<Widget> _imageWidgets = [];
+
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _categoryController = TextEditingController();
-  final TextEditingController _modelMakeController = TextEditingController();
+  final TextEditingController _modelController = TextEditingController();
+  final TextEditingController _makeController = TextEditingController();
+  final TextEditingController _capacityController = TextEditingController();
+  final TextEditingController _gearsController = TextEditingController();
+  final TextEditingController _acController = TextEditingController();
 
-  void successMessage(){
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Success'),
-          content: const Text('Automobile details uploaded successfully.'),
-          actions: [
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> _uploadData() async {
-    // Validate form fields
-    if (_selectedImages.isEmpty ||
-        _nameController.text.isEmpty ||
-        _categoryController.text.isEmpty ||
-        _modelMakeController.text.isEmpty) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Error'),
-            content: const Text('Please fill in all fields and select at least one image.'),
-            actions: [
-              TextButton(
-                child: const Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-      return;
-    }
-
-    try {
-      List<String> imageUrls = [];
-
-      // Upload images to Firebase Storage
-      for (File imageFile in _selectedImages) {
-        String imageName = path.basename(imageFile.path);
-        Reference storageRef = FirebaseStorage.instance.ref().child(imageName);
-        UploadTask uploadTask = storageRef.putFile(imageFile);
-        TaskSnapshot storageSnapshot = await uploadTask.whenComplete(() => null);
-        String imageUrl = await storageSnapshot.ref.getDownloadURL();
-        imageUrls.add(imageUrl);
-      }
-
-      // Upload automobile details and image URLs to Firestore
-      FirebaseFirestore firestore = FirebaseFirestore.instance;
-      CollectionReference automobilesRef = firestore.collection('automobiles');
-      await automobilesRef.add({
-        'image_urls': imageUrls,
-        'name': _nameController.text,
-        'category': _categoryController.text,
-        'model_make': _modelMakeController.text,
-      });
-
-      // Show success dialog
-      successMessage();
-
-      // Clear form fields
-      _selectedImages.clear();
-      _nameController.clear();
-      _categoryController.clear();
-      _modelMakeController.clear();
-
-
-    } catch (error) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Error'),
-            content: const Text('An error occurred.'),
-            actions: [
-              TextButton(
-                child: const Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
-  }
-
-  Future<void> _pickImages() async {
-    final ImagePicker picker = ImagePicker();
-    final List<XFile> images = await picker.pickMultiImage();
-
-    setState(() {
-      _selectedImages = images.map((XFile image) => File(image.path)).toList();
-      _imageWidgets = _selectedImages
-          .map((File image) => Image.file(
-        image,
-        width: 150,
-        height: 150,
-        fit: BoxFit.cover,
-      ))
-          .toList();
-    });
-  }
+  final ImagePicker _picker = ImagePicker();
+  final List<XFile> _selectedList = [];
+  final FirebaseStorage _storageRef = FirebaseStorage.instance;
+  List<String> arrImgUrl = [];
+  int uploadItem = 0;
+  bool _isUploading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -142,45 +33,150 @@ class _BO_DetailsState extends State<BO_Details> {
         title: const Text('Details'),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: ListView(
-            children: [
-              TextField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Automobile Name'),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: _categoryController,
-                decoration: const InputDecoration(labelText: 'Category'),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: _modelMakeController,
-                decoration: const InputDecoration(labelText: 'Model Make'),
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: _pickImages,
-                child: const Text('Select Images'),
-              ),
-              const SizedBox(height: 10),
-              CarouselSlider(
-                options: CarouselOptions(
-                  height: 200,
-                  enableInfiniteScroll: false,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: _isUploading? isUploading() :Column(
+              children: [
+                TextField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(labelText: 'Automobile Name', hintText: 'Honda, Suzuki, Hyundai', border: OutlineInputBorder()),
                 ),
-                items: _imageWidgets,
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _uploadData,
-                child: const Text('Upload'),
-              ),
-            ],
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _categoryController,
+                  decoration: const InputDecoration(labelText: 'Category', hintText: 'Car, bike, SUV', border: OutlineInputBorder()),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _modelController,
+                        decoration: const InputDecoration(labelText: 'Model', hintText: '2017', border: OutlineInputBorder()),
+                      ),
+                    ),
+                    const SizedBox(width: 5,),
+                    Expanded(
+                      child: TextField(
+                        controller: _makeController,
+                        decoration: const InputDecoration(labelText: 'Make', hintText: 'SONATA, CIVIC, CITY, etc', border: OutlineInputBorder()),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _capacityController,
+                  decoration: const InputDecoration(labelText: 'Seating Capacity', hintText: '4,5', border: OutlineInputBorder()),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _gearsController,
+                  decoration: const InputDecoration(labelText: 'Automatic or Manual', border: OutlineInputBorder()),
+                ),
+                const SizedBox(height: 10),
+
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _acController,
+                  decoration: const InputDecoration(
+                    labelText: 'AC or Non-AC',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: selectImage,
+                  child: const Text('Select Images'),
+                ),
+                const SizedBox(height: 10),
+                _selectedList.isEmpty
+                    ? const Text("No Image selected")
+                    : GridView.builder(
+                  shrinkWrap: true,
+                  itemCount: _selectedList.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                  ),
+                  itemBuilder: (BuildContext context, int index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(2.0),
+                      child: Image.file(
+                        File(_selectedList[index].path),
+                        fit: BoxFit.cover,
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          if(_selectedList.isNotEmpty){
+            uploadFunction(_selectedList);  
+          }else{
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please Select Image First??')));
+          }
+          
+        },
+        tooltip: 'Upload',
+        child: const Icon(Icons.file_upload),
+      ),
+    );
+  }
+
+  void uploadFunction(List<XFile> images){
+    setState(() {
+      _isUploading = true;
+    });
+    for(int i = 0; i < images.length; i++){
+      var imageUrl = uploadFile(images[i]);
+      arrImgUrl.add(imageUrl.toString());
+    }
+  }
+
+  Future<String> uploadFile(XFile image)async{
+    Reference reference = _storageRef.ref().child('multiple_images').child(image.name);
+    UploadTask uploadTask = reference.putFile(File(image.path));
+    await uploadTask.whenComplete(() {
+      setState(() {
+        uploadItem++;
+        if(uploadItem == _selectedList.length){
+          _isUploading = false;
+          uploadItem = 0;
+        }
+      });
+    });
+    return reference.getDownloadURL();
+  }
+
+  Future<void> selectImage()async{
+    _selectedList.clear();
+    try{
+      final List<XFile> imgs = await _picker.pickMultiImage();
+      if(imgs.isNotEmpty){
+        _selectedList.addAll(imgs);
+      }
+    }catch(e){
+      Utils().toastMessage(e.toString());
+    }
+    setState(() {});
+  }
+
+  Widget isUploading() {
+    return Center(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("Uploading: $uploadItem/${_selectedList.length}"),
+          const SizedBox(height: 10,),
+          const CircularProgressIndicator(strokeWidth: 4, color: Color(0xFF03DAC6),)
+        ],
       ),
     );
   }

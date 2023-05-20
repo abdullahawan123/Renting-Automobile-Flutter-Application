@@ -14,31 +14,33 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
-
-  late final AnimationController _controller = AnimationController(
-      duration: const Duration(seconds: 3),
-      vsync: this)..repeat();
+  late final AnimationController _controller;
 
   SplashServices splashServices = SplashServices();
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    splashServices.isLogin(context);
+    _controller = AnimationController(
+      duration: const Duration(seconds: 3),
+      vsync: this,
+    )..repeat();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      splashServices.isLogin(context);
+    });
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
-    super.dispose();
     _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: ()async{
+      onWillPop: () async {
         SystemNavigator.pop();
         return true;
       },
@@ -46,41 +48,44 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
         body: SafeArea(
           child: Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [
-                hexStringToColor("03DAC6"),
-                hexStringToColor("03DAC6"),
-                hexStringToColor("1C201D"),
-              ], begin: Alignment.topCenter, end: Alignment.bottomCenter
-              )
+              gradient: LinearGradient(
+                colors: [
+                  hexStringToColor("03DAC6"),
+                  hexStringToColor("03DAC6"),
+                  hexStringToColor("1C201D"),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 SafeArea(
-                    child: logoWidget('Assets/images/logo-1.png')
+                  child: logoWidget('Assets/images/logo-1.png'),
+                ),
+                Center(
+                  child: DefaultTextStyle(
+                    style: const TextStyle(
+                      fontSize: 30.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    child: AnimatedTextKit(
+                      displayFullTextOnTap: true,
+                      pause: const Duration(seconds: 6),
+                      isRepeatingAnimation: false,
+                      animatedTexts: [
+                        TypewriterAnimatedText('Wheel For A\n While', textAlign: TextAlign.center),
+                      ],
+                    ),
                   ),
-               Center(
-                 child: DefaultTextStyle(
-                   style: const TextStyle(
-                     fontSize: 30.0,
-                     fontWeight: FontWeight.bold,
-                     color: Colors.white,
-                   ),
-                   child: AnimatedTextKit(
-                     displayFullTextOnTap: true,
-                     pause: const Duration(seconds: 6),
-                     isRepeatingAnimation: false,
-                       animatedTexts: [
-                         TypewriterAnimatedText('Wheel For A\n While', textAlign: TextAlign.center),
-                       ],
-                   )
-                 ),
-               )
+                )
               ],
             ),
           ),
-        )
+        ),
       ),
     );
   }
