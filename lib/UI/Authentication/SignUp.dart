@@ -40,13 +40,19 @@ class _SignUpState extends State<SignUp> {
 
 
   void signUp(String email, String password, String role) async {
-    const CircularProgressIndicator();
+    setState(() {
+      loading = true ;
+    });
     if (_formKey.currentState!.validate()) {
       await _auth
           .createUserWithEmailAndPassword(email: email, password: password)
           .then((value) => {postDetailsToFirestore(email, role)})
           .catchError((e){
+            setState(() {
+              loading = false ;
+            });
             Utils().toastMessage(e.toString());
+
       });
     }
   }
@@ -58,6 +64,9 @@ class _SignUpState extends State<SignUp> {
     ref.doc(user!.uid).set({'email': _emailController.text, 'role': role});
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => const Login()));
+    setState(() {
+      loading = false ;
+    });
   }
 
   @override
