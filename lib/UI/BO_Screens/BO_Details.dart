@@ -22,6 +22,9 @@ class _BO_DetailsState extends State<BO_Details> {
   final TextEditingController _acController = TextEditingController();
   final TextEditingController _dailyPriceController = TextEditingController();
   final TextEditingController _monthlyPriceController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _cityController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
 
   FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -77,9 +80,22 @@ class _BO_DetailsState extends State<BO_Details> {
                   decoration: const InputDecoration(labelText: 'Seating Capacity', hintText: '4,5', border: OutlineInputBorder()),
                 ),
                 const SizedBox(height: 10),
-                TextField(
-                  controller: _gearsController,
-                  decoration: const InputDecoration(labelText: 'Automatic or Manual', border: OutlineInputBorder()),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _gearsController,
+                        decoration: const InputDecoration(labelText: 'Automatic or Manual', border: OutlineInputBorder()),
+                      ),
+                    ),
+                    const SizedBox(width: 5,),
+                    Expanded(
+                      child: TextField(
+                        controller: _cityController,
+                        decoration: const InputDecoration(labelText: 'City', border: OutlineInputBorder()),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 10),
                 Row(
@@ -100,12 +116,31 @@ class _BO_DetailsState extends State<BO_Details> {
                   ],
                 ),
                 const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _locationController,
+                        decoration: const InputDecoration(labelText: 'Location', hintText: 'Place of the car', border: OutlineInputBorder()),
+                      ),
+                    ),
+                    const SizedBox(width: 5,),
+                    Expanded(
+                      child: TextField(
+                        controller: _acController,
+                        decoration: const InputDecoration(
+                          labelText: 'AC or Non-AC',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
                 TextField(
-                  controller: _acController,
-                  decoration: const InputDecoration(
-                    labelText: 'AC or Non-AC',
-                    border: OutlineInputBorder(),
-                  ),
+                  maxLines: 4,
+                  controller: _descriptionController,
+                  decoration: const InputDecoration(labelText: 'Description', hintText: 'Tell us about the car, a short summary!!!', border: OutlineInputBorder()),
                 ),
                 const SizedBox(height: 10),
                 ElevatedButton(
@@ -146,7 +181,11 @@ class _BO_DetailsState extends State<BO_Details> {
                 _makeController.text.isEmpty ||
                 _acController.text.isEmpty ||
                 _dailyPriceController.text.isEmpty ||
-                _monthlyPriceController.text.isEmpty){
+                _monthlyPriceController.text.isEmpty ||
+                _descriptionController.text.isEmpty ||
+                _locationController.text.isEmpty ||
+                _cityController.text.isEmpty
+            ){
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -224,9 +263,13 @@ class _BO_DetailsState extends State<BO_Details> {
       'capacity': _capacityController.text,
       'no_of_gear': _gearsController.text,
       'ac or non-ac': _acController.text,
+      'description' : _descriptionController.text,
+      'location' : _locationController.text,
+      'city' : _cityController.text,
       'daily_price': _dailyPriceController.text,
       'monthly_price': _monthlyPriceController.text,
       'image_URL': imageUrls,
+
     };
 
     var id = "${DateTime.now().millisecondsSinceEpoch}";
