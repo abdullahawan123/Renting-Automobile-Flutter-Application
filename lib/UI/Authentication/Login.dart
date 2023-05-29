@@ -71,7 +71,6 @@ class _LoginState extends State<Login> {
           loading = false ;
         });
         Utils().toastMessage("Document doesn't exist in the database");
-        debugPrint(_auth.toString());
       }
     });
   }
@@ -87,7 +86,6 @@ class _LoginState extends State<Login> {
           email: email,
           password: password,
         );
-        debugPrint(userCredential.toString());
         route();
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found') {

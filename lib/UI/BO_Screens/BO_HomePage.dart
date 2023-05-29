@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:wheel_for_a_while/UI/Authentication/Login.dart';
 import 'package:wheel_for_a_while/UI/BO_Screens/BO_Details.dart';
 import 'package:wheel_for_a_while/UI/BO_Screens/InfomationOfAutomobile.dart';
+import 'package:wheel_for_a_while/UI/utils/utilities.dart';
 
 class BO_HomePage extends StatefulWidget {
   @override
@@ -11,6 +13,7 @@ class BO_HomePage extends StatefulWidget {
 
 class _BO_HomePageState extends State<BO_HomePage> {
   late String currentUserUid;
+  final auth = FirebaseAuth.instance;
 
   @override
   void initState() {
@@ -34,6 +37,50 @@ class _BO_HomePageState extends State<BO_HomePage> {
         title: const Text('Business Owner'),
         centerTitle: true,
         automaticallyImplyLeading: false,
+      ),
+      drawer: Drawer(
+        child: Column(
+          children: [
+            const UserAccountsDrawerHeader(
+              accountName: Text(" "),
+              accountEmail: Text(''),
+              currentAccountPicture: CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Icon(
+                  Icons.person,
+                  size: 50,
+                ),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.person_2_outlined),
+              title: const Text('Profile'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(Icons.notification_add_outlined),
+              title: const Text('Notification'),
+              onTap: () {},
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Setting'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(Icons.exit_to_app),
+              title: const Text('Log out'),
+              onTap: () {
+                auth.signOut().then((value) {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const Login()));
+                }).onError((error, stackTrace) {
+                  Utils().toastMessage(error.toString());
+                });
+              },
+            ),
+          ],
+        ),
       ),
       body: SafeArea(
         child: StreamBuilder<QuerySnapshot>(
@@ -79,7 +126,6 @@ class _BO_HomePageState extends State<BO_HomePage> {
                     final capacity = automobile['capacity'] ?? '';
                     final dailyPrice = automobile['daily_price'] ?? '';
                     final monthlyPrice = automobile['monthly_price'] ?? '';
-                    final type = automobile['no_of_gear'] ?? '';
                     final location = automobile['location'] ?? '';
                     final description = automobile['description'] ?? '';
                     final city = automobile['city'] ?? '';
@@ -98,7 +144,6 @@ class _BO_HomePageState extends State<BO_HomePage> {
                                   capacity: capacity,
                                   daily: dailyPrice,
                                   monthly: monthlyPrice,
-                                  gears: type,
                                   location: location,
                                   description: description,
                                   city: city,

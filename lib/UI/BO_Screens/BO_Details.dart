@@ -303,16 +303,4 @@ class _BO_DetailsState extends State<BO_Details> {
     }
     setState(() {});
   }
-
-  // Widget isUploading() {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.center,
-  //     mainAxisAlignment: MainAxisAlignment.center,
-  //     children: [
-  //       Center(child: Text("Uploading: $uploadItem/${_selectedList.length}")),
-  //       const SizedBox(height: 10,),
-  //       const Center(child: CircularProgressIndicator(strokeWidth: 4, color: Color(0xFF03DAC6),))
-  //     ],
-  //   );
-  // }
 }
