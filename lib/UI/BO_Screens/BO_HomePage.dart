@@ -29,7 +29,6 @@ class _BO_HomePageState extends State<BO_HomePage> {
       });
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -129,7 +128,7 @@ class _BO_HomePageState extends State<BO_HomePage> {
                     final location = automobile['location'] ?? '';
                     final description = automobile['description'] ?? '';
                     final city = automobile['city'] ?? '';
-
+                    final gears = automobile['no_of_gear'] ?? '';
 
                     return InkWell(
                       onTap: (){
@@ -147,6 +146,7 @@ class _BO_HomePageState extends State<BO_HomePage> {
                                   location: location,
                                   description: description,
                                   city: city,
+                                  gears: gears,
                                 )));
                       },
                       child: Container(
@@ -160,12 +160,43 @@ class _BO_HomePageState extends State<BO_HomePage> {
                           children: [
                             Image.network(imageUrls.first),
                             const SizedBox(height: 10),
-                            Text(
-                              name,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            Row(
+                              children: [
+                                const SizedBox(width: 55,),
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    name,
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: PopupMenuButton<String>(
+                                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                                      const PopupMenuItem<String>(
+                                        value: 'edit',
+                                        child: Text('Edit'),
+                                      ),
+                                      const PopupMenuItem<String>(
+                                        value: 'delete',
+                                        child: Text('Delete'),
+                                      ),
+                                    ],
+                                    onSelected: (String value) {
+                                      if (value == 'edit') {
+                                        // Perform edit action
+                                      } else if (value == 'delete') {
+                                        // Perform delete action
+                                      }
+                                    },
+                                    icon: const Icon(Icons.more_vert),
+                                  ),
+                                ),
+                              ],
                             ),
                             const SizedBox(height: 8),
                             Text(
