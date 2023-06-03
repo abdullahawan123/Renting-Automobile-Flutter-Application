@@ -6,6 +6,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:wheel_for_a_while/UI/utils/utilities.dart';
 
+enum CategorySelection {Car, Bike}
+
 class BO_Details extends StatefulWidget {
   @override
   _BO_DetailsState createState() => _BO_DetailsState();
@@ -14,7 +16,6 @@ class BO_Details extends StatefulWidget {
 class _BO_DetailsState extends State<BO_Details> {
 
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _categoryController = TextEditingController();
   final TextEditingController _modelController = TextEditingController();
   final TextEditingController _makeController = TextEditingController();
   final TextEditingController _capacityController = TextEditingController();
@@ -22,6 +23,9 @@ class _BO_DetailsState extends State<BO_Details> {
   final TextEditingController _acController = TextEditingController();
   final TextEditingController _dailyPriceController = TextEditingController();
   final TextEditingController _monthlyPriceController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _cityController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
 
   FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -30,6 +34,7 @@ class _BO_DetailsState extends State<BO_Details> {
   final ImagePicker _picker = ImagePicker();
   final List<XFile> _selectedList = [];
   bool loading = false ;
+  CategorySelection? _categorySelection;
 
 
   @override
@@ -49,9 +54,34 @@ class _BO_DetailsState extends State<BO_Details> {
                   decoration: const InputDecoration(labelText: 'Automobile Name', hintText: 'Honda, Suzuki, Hyundai', border: OutlineInputBorder()),
                 ),
                 const SizedBox(height: 10),
-                TextField(
-                  controller: _categoryController,
-                  decoration: const InputDecoration(labelText: 'Category', hintText: 'Car, bike, SUV', border: OutlineInputBorder()),
+                const Text('Choose Category'),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                        child: RadioListTile<CategorySelection>(
+                          title: Text(CategorySelection.Car.name),
+                            value: CategorySelection.Car,
+                            groupValue: _categorySelection,
+                            onChanged: (value){
+                            setState(() {
+                              _categorySelection = value ;
+                            });
+                            }
+                        )),
+                    const SizedBox(width: 10,),
+                    Expanded(
+                        child: RadioListTile<CategorySelection>(
+                          title: Text(CategorySelection.Bike.name),
+                            value: CategorySelection.Bike,
+                            groupValue: _categorySelection,
+                            onChanged: (value){
+                            setState(() {
+                              _categorySelection = value ;
+                            });
+                            }
+                        )),
+                  ],
                 ),
                 const SizedBox(height: 10),
                 Row(
@@ -77,9 +107,22 @@ class _BO_DetailsState extends State<BO_Details> {
                   decoration: const InputDecoration(labelText: 'Seating Capacity', hintText: '4,5', border: OutlineInputBorder()),
                 ),
                 const SizedBox(height: 10),
-                TextField(
-                  controller: _gearsController,
-                  decoration: const InputDecoration(labelText: 'Automatic or Manual', border: OutlineInputBorder()),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _gearsController,
+                        decoration: const InputDecoration(labelText: 'Automatic or Manual', border: OutlineInputBorder()),
+                      ),
+                    ),
+                    const SizedBox(width: 5,),
+                    Expanded(
+                      child: TextField(
+                        controller: _cityController,
+                        decoration: const InputDecoration(labelText: 'City', border: OutlineInputBorder()),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 10),
                 Row(
@@ -100,12 +143,31 @@ class _BO_DetailsState extends State<BO_Details> {
                   ],
                 ),
                 const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _locationController,
+                        decoration: const InputDecoration(labelText: 'Location', hintText: 'Place of the car', border: OutlineInputBorder()),
+                      ),
+                    ),
+                    const SizedBox(width: 5,),
+                    Expanded(
+                      child: TextField(
+                        controller: _acController,
+                        decoration: const InputDecoration(
+                          labelText: 'AC or Non-AC',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
                 TextField(
-                  controller: _acController,
-                  decoration: const InputDecoration(
-                    labelText: 'AC or Non-AC',
-                    border: OutlineInputBorder(),
-                  ),
+                  maxLines: 4,
+                  controller: _descriptionController,
+                  decoration: const InputDecoration(labelText: 'Description', hintText: 'Tell us about the car, a short summary!!!', border: OutlineInputBorder()),
                 ),
                 const SizedBox(height: 10),
                 ElevatedButton(
@@ -140,13 +202,16 @@ class _BO_DetailsState extends State<BO_Details> {
         onPressed: () {
           if(_selectedList.isNotEmpty){
             if(_nameController.text.isEmpty ||
-                _categoryController.text.isEmpty ||
                 _modelController.text.isEmpty ||
                 _capacityController.text.isEmpty ||
                 _makeController.text.isEmpty ||
                 _acController.text.isEmpty ||
                 _dailyPriceController.text.isEmpty ||
-                _monthlyPriceController.text.isEmpty){
+                _monthlyPriceController.text.isEmpty ||
+                _descriptionController.text.isEmpty ||
+                _locationController.text.isEmpty ||
+                _cityController.text.isEmpty
+            ){
               showDialog(
                 context: context,
                 builder: (BuildContext context) {
@@ -218,15 +283,19 @@ class _BO_DetailsState extends State<BO_Details> {
     Map<String, dynamic> data = {
       'user_id' : user?.uid,
       'automobile_name': _nameController.text,
-      'category': _categoryController.text,
+      'category': _categorySelection.toString(),
       'model': _modelController.text,
       'make': _makeController.text,
       'capacity': _capacityController.text,
       'no_of_gear': _gearsController.text,
       'ac or non-ac': _acController.text,
+      'description' : _descriptionController.text,
+      'location' : _locationController.text,
+      'city' : _cityController.text,
       'daily_price': _dailyPriceController.text,
       'monthly_price': _monthlyPriceController.text,
       'image_URL': imageUrls,
+
     };
 
     var id = "${DateTime.now().millisecondsSinceEpoch}";
@@ -260,16 +329,4 @@ class _BO_DetailsState extends State<BO_Details> {
     }
     setState(() {});
   }
-
-  // Widget isUploading() {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.center,
-  //     mainAxisAlignment: MainAxisAlignment.center,
-  //     children: [
-  //       Center(child: Text("Uploading: $uploadItem/${_selectedList.length}")),
-  //       const SizedBox(height: 10,),
-  //       const Center(child: CircularProgressIndicator(strokeWidth: 4, color: Color(0xFF03DAC6),))
-  //     ],
-  //   );
-  // }
 }
