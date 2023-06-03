@@ -11,13 +11,12 @@ import 'package:wheel_for_a_while/UI/utils/utilities.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({Key? key}) : super(key: key);
-  
+
   @override
   State<Homepage> createState() => _HomepageState();
 }
 
 class _HomepageState extends State<Homepage> {
-
   final auth = FirebaseAuth.instance;
   String firstName = '';
   String lastName = '';
@@ -25,19 +24,16 @@ class _HomepageState extends State<Homepage> {
 
   @override
   void initState() {
-
     super.initState();
     details();
   }
 
-  void details()async{
+  void details() async {
     SharedPreferences sp = await SharedPreferences.getInstance();
     firstName = sp.getString('first_name') ?? 'User-name ';
     lastName = sp.getString('last_name') ?? 'not found';
     email = sp.getString('email') ?? 'No Email';
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   @override
@@ -52,172 +48,146 @@ class _HomepageState extends State<Homepage> {
           centerTitle: true,
           flexibleSpace: Container(
             decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [
+              gradient: LinearGradient(
+                colors: [
                   hexStringToColor("03DAC6"),
                   hexStringToColor("03DAC6"),
                   hexStringToColor("1C201D"),
-                ], begin: Alignment.topCenter, end: Alignment.bottomCenter
-                ),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
               borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(20),
-                  bottomRight: Radius.circular(20)
+                bottomLeft: Radius.circular(20),
+                bottomRight: Radius.circular(20),
               ),
             ),
           ),
           actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(
-                  builder: (context) => const NotificationSection())
-              );
-            },
-            icon: const Icon(Icons.notification_add_outlined),
-          ),
-        ],
-      ),
-      drawer: Drawer(
-        child: Column(
-          children: [
-             UserAccountsDrawerHeader(
-              accountName: Text("$firstName $lastName "),
-              accountEmail: Text(email.toString()),
-              currentAccountPicture: const CircleAvatar(
-                backgroundColor: Colors.white,
-                child: Icon(
-                  Icons.person,
-                  size: 50,
-                ),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.person_2_outlined),
-              title: const Text('Profile'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: const Icon(Icons.notification_add_outlined),
-              title: const Text('Notification'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: const Icon(Icons.favorite_border_outlined),
-              title: const Text('Favourite'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: const Icon(Icons.shopping_cart_outlined),
-              title: const Text('Cart'),
-              onTap: () {},
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Setting'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: const Icon(Icons.exit_to_app),
-              title: const Text('Log out'),
-              onTap: () {
-                auth.signOut().then((value) {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const Login()));
-                }).onError((error, stackTrace) {
-                Utils().toastMessage(error.toString());
-                });
-                },
+            IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const NotificationSection(),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.notifications),
             ),
           ],
         ),
-      ),
+        drawer: Drawer(
+          child: Column(
+            children: [
+              UserAccountsDrawerHeader(
+                accountName: Text("$firstName $lastName"),
+                accountEmail: Text(email),
+                currentAccountPicture: const CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: Icon(
+                    Icons.person,
+                    size: 50,
+                  ),
+                ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.person),
+                title: const Text('Profile'),
+                onTap: () {},
+              ),
+              ListTile(
+                leading: const Icon(Icons.notifications),
+                title: const Text('Notification'),
+                onTap: () {},
+              ),
+              ListTile(
+                leading: const Icon(Icons.favorite_border),
+                title: const Text('Favorites'),
+                onTap: () {},
+              ),
+              ListTile(
+                leading: const Icon(Icons.shopping_cart),
+                title: const Text('Cart'),
+                onTap: () {},
+              ),
+              const Divider(),
+              ListTile(
+                leading: const Icon(Icons.settings),
+                title: const Text('Settings'),
+                onTap: () {},
+              ),
+              ListTile(
+                leading: const Icon(Icons.exit_to_app),
+                title: const Text('Log out'),
+                onTap: () {
+                  auth.signOut().then((value) {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const Login()));
+                  }).onError((error, stackTrace) {
+                    Utils().toastMessage(error.toString());
+                  });
+                },
+              ),
+            ],
+          ),
+        ),
         body: SafeArea(
           child: Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                const SizedBox(height: 50,),
-                const Text('There are two categories, right now!\navailable for booking....',
+                const SizedBox(height: 30),
+                const Text(
+                  'Choose your preferred category:',
                   style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'ShantellSans',
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
                   ),
+                  textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 50,),
+                const SizedBox(height: 50),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    const Text('Car ->',
-                      style: TextStyle(
-                          fontSize: 30,
-                          color: Color(0xFF03DAC6),
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'ShantellSans',
-                      ),),
-              InkWell(
-                onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const CarOption()));
-                },
-                child: Container(
-                  height: 80,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
-                    color: Colors.blueGrey[200],
-                    boxShadow: const [
-                      BoxShadow(
-                          color: Color(0xFF03DAC6),
-                          blurRadius: 20,
-                          offset: Offset(5, 10),
-                          spreadRadius: 0.1,
-                          blurStyle: BlurStyle.normal
-                      ),
-                    ],
-                  ),
-                  child: const Image(
-                    image: AssetImage('Assets/images/car.png'),
-                    fit: BoxFit.fill,
-                  )
+                    Column(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const CarOption()),
+                            );
+                          },
+                          icon: const Icon(Icons.directions_car, size: 60),
+                          color: Colors.blueGrey[200],
+                        ),
+                        const SizedBox(height: 25),
+                        const Text(
+                          'Cars',
+                          style: TextStyle(fontSize: 24),
+                        ),
+                      ],
                     ),
-              )
-                  ],
-                ),
-                const SizedBox(height: 50,),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    const Text('Bike ->',
-                      style: TextStyle(
-                          fontSize: 30,
-                          color: Color(0xFF03DAC6),
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'ShantellSans',
-                      ),),
-                    InkWell(
-                      onTap: (){
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => const BikeOption()));
-                      },
-                      child: Container(
-                          height: 80,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30),
-                            color: Colors.blueGrey[200],
-                            boxShadow: const [
-                              BoxShadow(
-                                  color: Color(0xFF03DAC6),
-                                  blurRadius: 20,
-                                  offset: Offset(5, 10),
-                                  spreadRadius: 0.1,
-                                  blurStyle: BlurStyle.normal
-                              ),
-                            ],
-                          ),
-                          child: const Image(
-                            image: AssetImage('Assets/images/motorbike.jpg'),
-                            fit: BoxFit.cover,
-                          )
-                      ),
-                    )
+                    Column(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const BikeOption()),
+                            );
+                          },
+                          icon: const Icon(Icons.motorcycle, size: 60),
+                          color: Colors.blueGrey[200],
+                        ),
+                        const SizedBox(height: 25),
+                        const Text(
+                          'Bikes',
+                          style: TextStyle(fontSize: 24),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ],
@@ -227,6 +197,4 @@ class _HomepageState extends State<Homepage> {
       ),
     );
   }
-
-
 }

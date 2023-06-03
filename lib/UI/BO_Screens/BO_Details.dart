@@ -6,6 +6,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:wheel_for_a_while/UI/utils/utilities.dart';
 
+enum CategorySelection {Car, Bike}
+
 class BO_Details extends StatefulWidget {
   @override
   _BO_DetailsState createState() => _BO_DetailsState();
@@ -14,7 +16,6 @@ class BO_Details extends StatefulWidget {
 class _BO_DetailsState extends State<BO_Details> {
 
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _categoryController = TextEditingController();
   final TextEditingController _modelController = TextEditingController();
   final TextEditingController _makeController = TextEditingController();
   final TextEditingController _capacityController = TextEditingController();
@@ -33,6 +34,7 @@ class _BO_DetailsState extends State<BO_Details> {
   final ImagePicker _picker = ImagePicker();
   final List<XFile> _selectedList = [];
   bool loading = false ;
+  CategorySelection? _categorySelection;
 
 
   @override
@@ -52,9 +54,34 @@ class _BO_DetailsState extends State<BO_Details> {
                   decoration: const InputDecoration(labelText: 'Automobile Name', hintText: 'Honda, Suzuki, Hyundai', border: OutlineInputBorder()),
                 ),
                 const SizedBox(height: 10),
-                TextField(
-                  controller: _categoryController,
-                  decoration: const InputDecoration(labelText: 'Category', hintText: 'Car, bike, SUV', border: OutlineInputBorder()),
+                const Text('Choose Category'),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                        child: RadioListTile<CategorySelection>(
+                          title: Text(CategorySelection.Car.name),
+                            value: CategorySelection.Car,
+                            groupValue: _categorySelection,
+                            onChanged: (value){
+                            setState(() {
+                              _categorySelection = value ;
+                            });
+                            }
+                        )),
+                    const SizedBox(width: 10,),
+                    Expanded(
+                        child: RadioListTile<CategorySelection>(
+                          title: Text(CategorySelection.Bike.name),
+                            value: CategorySelection.Bike,
+                            groupValue: _categorySelection,
+                            onChanged: (value){
+                            setState(() {
+                              _categorySelection = value ;
+                            });
+                            }
+                        )),
+                  ],
                 ),
                 const SizedBox(height: 10),
                 Row(
@@ -175,7 +202,6 @@ class _BO_DetailsState extends State<BO_Details> {
         onPressed: () {
           if(_selectedList.isNotEmpty){
             if(_nameController.text.isEmpty ||
-                _categoryController.text.isEmpty ||
                 _modelController.text.isEmpty ||
                 _capacityController.text.isEmpty ||
                 _makeController.text.isEmpty ||
@@ -257,7 +283,7 @@ class _BO_DetailsState extends State<BO_Details> {
     Map<String, dynamic> data = {
       'user_id' : user?.uid,
       'automobile_name': _nameController.text,
-      'category': _categoryController.text,
+      'category': _categorySelection.toString(),
       'model': _modelController.text,
       'make': _makeController.text,
       'capacity': _capacityController.text,
