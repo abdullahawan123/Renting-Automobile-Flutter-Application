@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wheel_for_a_while/UI/Authentication/Login.dart';
@@ -12,235 +13,278 @@ class BO_HomePage extends StatefulWidget {
 }
 
 class _BO_HomePageState extends State<BO_HomePage> {
-  late String currentUserUid;
+  String currentUserUid = '';
   final auth = FirebaseAuth.instance;
+  DateTime backButtonPressed = DateTime.now();
+  String fName = 'Username ';
+  String lName = 'not found';
+  String email = 'No Email';
 
   @override
   void initState() {
     super.initState();
-    getUserUid();
+    details();
   }
 
-  Future<void> getUserUid() async {
-    User? user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      setState(() {
-        currentUserUid = user.uid;
-      });
-    }
+  void details(){
+    User? user = auth.currentUser;
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(user?.uid)
+        .get()
+        .then((DocumentSnapshot documentSnapshot){
+      if(documentSnapshot.exists){
+        fName = documentSnapshot.get('firstname');
+        lName = documentSnapshot.get('lastname');
+        email = documentSnapshot.get('email');
+        setState(() {
+          currentUserUid = user!.uid.toString();
+        });
+      }
+      else{
+        Utils().toastMessage('Unable to load username & email');
+      }
+      debugPrint(user?.uid);
+    });
   }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Business Owner'),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-      ),
-      drawer: Drawer(
-        child: Column(
-          children: [
-            const UserAccountsDrawerHeader(
-              accountName: Text(" "),
-              accountEmail: Text(''),
-              currentAccountPicture: CircleAvatar(
-                backgroundColor: Colors.white,
-                child: Icon(
-                  Icons.person,
-                  size: 50,
+    return WillPopScope(
+      onWillPop: () => onBackButtonDoublePressed(context),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Business Owner'),
+          centerTitle: true,
+          automaticallyImplyLeading: false,
+        ),
+        drawer: Drawer(
+          child: Column(
+            children: [
+              UserAccountsDrawerHeader(
+                accountName: Text("$fName $lName"),
+                accountEmail: Text(email),
+                currentAccountPicture: const CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: Icon(
+                    Icons.person,
+                    size: 50,
+                  ),
                 ),
               ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.person_2_outlined),
-              title: const Text('Profile'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: const Icon(Icons.notification_add_outlined),
-              title: const Text('Notification'),
-              onTap: () {},
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Setting'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: const Icon(Icons.exit_to_app),
-              title: const Text('Log out'),
-              onTap: () {
-                auth.signOut().then((value) {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const Login()));
-                }).onError((error, stackTrace) {
-                  Utils().toastMessage(error.toString());
-                });
-              },
-            ),
-          ],
+              ListTile(
+                leading: const Icon(Icons.person),
+                title: const Text('Profile'),
+                onTap: () {},
+              ),
+              ListTile(
+                leading: const Icon(Icons.notifications),
+                title: const Text('Notification'),
+                onTap: () {},
+              ),
+              ListTile(
+                leading: const Icon(Icons.favorite_border),
+                title: const Text('Favorites'),
+                onTap: () {},
+              ),
+              ListTile(
+                leading: const Icon(Icons.shopping_cart),
+                title: const Text('Cart'),
+                onTap: () {},
+              ),
+              const Divider(),
+              ListTile(
+                leading: const Icon(Icons.settings),
+                title: const Text('Settings'),
+                onTap: () {},
+              ),
+              ListTile(
+                leading: const Icon(Icons.exit_to_app),
+                title: const Text('Log out'),
+                onTap: () {
+                  auth.signOut().then((value) {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const Login()));
+                  }).onError((error, stackTrace) {
+                    Utils().toastMessage(error.toString());
+                  });
+                },
+              ),
+            ],
+          ),
         ),
-      ),
-      body: SafeArea(
-        child: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection('automobile')
-              .where('user_id', isEqualTo: currentUserUid)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Center(
-                    child: Text('Error: ${snapshot.error}'),
-                  ),
-                ],
-              );
-            }
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: const [
-                  Center(
-                    child: CircularProgressIndicator(strokeWidth: 4, color: Color(0xFF03DAC6),),
-                  ),
-                ],
-              );
-            }
-            if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
-              return SingleChildScrollView(
-                child: Wrap(
-                  alignment: WrapAlignment.start,
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: snapshot.data!.docs.map((automobile) {
-                    final imageUrls = List<String>.from(automobile['image_URL']);
-                    final name = automobile['automobile_name'] ?? '';
-                    final make = automobile['make'] ?? '';
-                    final model = automobile['model'] ?? '';
-                    final carUnit = automobile['ac or non-ac'] ?? '';
-                    final capacity = automobile['capacity'] ?? '';
-                    final dailyPrice = automobile['daily_price'] ?? '';
-                    final monthlyPrice = automobile['monthly_price'] ?? '';
-                    final location = automobile['location'] ?? '';
-                    final description = automobile['description'] ?? '';
-                    final city = automobile['city'] ?? '';
-                    final gears = automobile['no_of_gear'] ?? '';
+        body: SafeArea(
+          child: StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('automobile')
+                .where('user_id', isEqualTo: currentUserUid)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Center(
+                      child: Text('Error: ${snapshot.error}'),
+                    ),
+                  ],
+                );
+              }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: const [
+                    Center(
+                      child: CircularProgressIndicator(strokeWidth: 4, color: Color(0xFF03DAC6),),
+                    ),
+                  ],
+                );
+              }
+              if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+                return SingleChildScrollView(
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: snapshot.data!.docs.map((automobile) {
+                      final imageUrls = List<String>.from(automobile['image_URL']);
+                      final name = automobile['automobile_name'] ?? '';
+                      final make = automobile['make'] ?? '';
+                      final model = automobile['model'] ?? '';
+                      final carUnit = automobile['ac or non-ac'] ?? '';
+                      final capacity = automobile['capacity'] ?? '';
+                      final dailyPrice = automobile['daily_price'] ?? '';
+                      final monthlyPrice = automobile['monthly_price'] ?? '';
+                      final location = automobile['location'] ?? '';
+                      final description = automobile['description'] ?? '';
+                      final city = automobile['city'] ?? '';
+                      final gears = automobile['no_of_gear'] ?? '';
 
-                    return InkWell(
-                      onTap: (){
-                        Navigator.push(context,
-                            MaterialPageRoute(
-                                builder: (context) => InformationOfAutomobile(
-                                  imageURL: imageUrls,
-                                  automobileName: name,
-                                  make: make,
-                                  model: model,
-                                  ac: carUnit,
-                                  capacity: capacity,
-                                  daily: dailyPrice,
-                                  monthly: monthlyPrice,
-                                  location: location,
-                                  description: description,
-                                  city: city,
-                                  gears: gears,
-                                )));
-                      },
-                      child: Container(
-                        width: MediaQuery.of(context).size.width / 2 - 15,
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Column(
-                          children: [
-                            Image.network(imageUrls.first),
-                            const SizedBox(height: 10),
-                            Row(
-                              children: [
-                                const SizedBox(width: 55,),
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    name,
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
+                      return InkWell(
+                        onTap: (){
+                          Navigator.push(context,
+                              MaterialPageRoute(
+                                  builder: (context) => InformationOfAutomobile(
+                                    imageURL: imageUrls,
+                                    automobileName: name,
+                                    make: make,
+                                    model: model,
+                                    ac: carUnit,
+                                    capacity: capacity,
+                                    daily: dailyPrice,
+                                    monthly: monthlyPrice,
+                                    location: location,
+                                    description: description,
+                                    city: city,
+                                    gears: gears,
+                                  )));
+                        },
+                        child: Container(
+                          width: MediaQuery.of(context).size.width / 2 - 15,
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Column(
+                            children: [
+                              Image.network(imageUrls.first),
+                              const SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  const SizedBox(width: 55,),
+                                  Align(
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      name,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                Align(
-                                  alignment: Alignment.bottomRight,
-                                  child: PopupMenuButton<String>(
-                                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                                      const PopupMenuItem<String>(
-                                        value: 'edit',
-                                        child: Text('Edit'),
-                                      ),
-                                      const PopupMenuItem<String>(
-                                        value: 'delete',
-                                        child: Text('Delete'),
-                                      ),
-                                    ],
-                                    onSelected: (String value) {
-                                      if (value == 'edit') {
-                                        // Perform edit action
-                                      } else if (value == 'delete') {
-                                        // Perform delete action
-                                      }
-                                    },
-                                    icon: const Icon(Icons.more_vert),
+                                  Align(
+                                    alignment: Alignment.bottomRight,
+                                    child: PopupMenuButton<String>(
+                                      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                                        const PopupMenuItem<String>(
+                                          value: 'edit',
+                                          child: Text('Edit'),
+                                        ),
+                                        const PopupMenuItem<String>(
+                                          value: 'delete',
+                                          child: Text('Delete'),
+                                        ),
+                                      ],
+                                      onSelected: (String value) {
+                                        if (value == 'edit') {
+                                          // Perform edit action
+                                        } else if (value == 'delete') {
+                                          // Perform delete action
+                                        }
+                                      },
+                                      icon: const Icon(Icons.more_vert),
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Make: $make',
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Model: $model',
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                          ],
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Make: $make',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Model: $model',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  }).toList(),
+                      );
+                    }).toList(),
+                  ),
+                );
+              }
+
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Text('No automobiles found.', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'ShantellSans'),),
+                    Text('If you want to add an automobile, ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'ShantellSans'),),
+                    Text('pressed the button below', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'ShantellSans'),),
+                    Text('At the right corner!!!!!', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'ShantellSans'),)
+                  ],
                 ),
               );
-            }
-
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Text('No automobiles found.', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'ShantellSans'),),
-                  Text('If you want to add an automobile, ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'ShantellSans'),),
-                  Text('pressed the button below', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'ShantellSans'),),
-                  Text('At the right corner!!!!!', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'ShantellSans'),)
-                ],
-              ),
+            },
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => BO_Details()),
             );
           },
+          child: const Icon(Icons.add),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => BO_Details()),
-          );
-        },
-        child: const Icon(Icons.add),
-      ),
     );
+  }
+  Future<bool> onBackButtonDoublePressed(BuildContext context) async {
+    final difference = DateTime.now().difference(backButtonPressed);
+    backButtonPressed = DateTime.now();
+
+    if (difference >= const Duration(seconds: 2)){
+      Utils().toastMessage1("Click again to close the app");
+      return false;
+    }else{
+      SystemNavigator.pop(animated: true);
+      return true;
+    }
   }
 }
 

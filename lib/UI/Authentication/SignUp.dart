@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wheel_for_a_while/UI/Authentication/Login.dart';
 import 'package:flutter/material.dart';
 import 'package:wheel_for_a_while/UI/Widgets/RoundButton.dart';
@@ -39,14 +38,14 @@ class _SignUpState extends State<SignUp> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
 
-  void signUp(String email, String password, String role) async {
+  void signUp(String email, String password, String role, String firstname, String lastname) async {
     setState(() {
       loading = true ;
     });
     if (_formKey.currentState!.validate()) {
       await _auth
           .createUserWithEmailAndPassword(email: email, password: password)
-          .then((value) => {postDetailsToFirestore(email, role)})
+          .then((value) => {postDetailsToFirestore(email, role, firstname, lastname)})
           .catchError((e){
             setState(() {
               loading = false ;
@@ -57,11 +56,15 @@ class _SignUpState extends State<SignUp> {
     }
   }
 
-  postDetailsToFirestore(String email, String role) async {
-    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+  postDetailsToFirestore(String email, String role, String firstname, String lastname) async {
     var user = _auth.currentUser;
     CollectionReference ref = FirebaseFirestore.instance.collection('users');
-    ref.doc(user!.uid).set({'email': _emailController.text, 'role': role});
+    ref.doc(user!.uid).set({
+      'email': _emailController.text,
+      'role': role,
+      'firstname': _firstNameController.text,
+      'lastname': _lastNameController.text,
+    });
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => const Login()));
     setState(() {
@@ -343,21 +346,11 @@ class _SignUpState extends State<SignUp> {
                           onTap: () async{
                             if(_formKey.currentState!.validate()){
                               if (_passwordController.text.toString() == _confirmController.text.toString()){
-                                signUp(_emailController.text, _passwordController.text, role);
+                                signUp(_emailController.text, _passwordController.text, role, _firstNameController.text, _lastNameController.text);
                               }else{
                                 Utils().toastMessage("Password and Confirm Password should be same. Otherwise you won't be able to continue");
                               }
                             }
-                            String fName = _firstNameController.text;
-                            String lName = _lastNameController.text;
-                            String em =  _emailController.text;
-                            SharedPreferences sp = await SharedPreferences.getInstance();
-                            sp.setString('first_name', fName);
-                            sp.setString('last_name', lName);
-                            sp.setString('email', em);
-                            setState(() {
-
-                            });
                           },
                         ),
                         SizedBox(height: MediaQuery.of(context).size.height * 0.001,),
