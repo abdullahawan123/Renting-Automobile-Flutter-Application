@@ -44,7 +44,6 @@ class _BO_HomePageState extends State<BO_HomePage> {
       else{
         Utils().toastMessage('Unable to load username & email');
       }
-      debugPrint(user?.uid);
     });
   }
 
@@ -143,107 +142,124 @@ class _BO_HomePageState extends State<BO_HomePage> {
               }
               if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
                 return SingleChildScrollView(
-                  child: Wrap(
-                    alignment: WrapAlignment.start,
-                    spacing: 10,
-                    runSpacing: 10,
-                    children: snapshot.data!.docs.map((automobile) {
-                      final imageUrls = List<String>.from(automobile['image_URL']);
-                      final name = automobile['automobile_name'] ?? '';
-                      final make = automobile['make'] ?? '';
-                      final model = automobile['model'] ?? '';
-                      final carUnit = automobile['ac or non-ac'] ?? '';
-                      final capacity = automobile['capacity'] ?? '';
-                      final dailyPrice = automobile['daily_price'] ?? '';
-                      final monthlyPrice = automobile['monthly_price'] ?? '';
-                      final location = automobile['location'] ?? '';
-                      final description = automobile['description'] ?? '';
-                      final city = automobile['city'] ?? '';
-                      final gears = automobile['no_of_gear'] ?? '';
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Wrap(
+                      alignment: WrapAlignment.start,
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: snapshot.data!.docs.map((automobile) {
+                        final imageUrls = List<String>.from(automobile['image_URL']);
+                        final name = automobile['automobile_name'] ?? '';
+                        final make = automobile['make'] ?? '';
+                        final model = automobile['model'] ?? '';
+                        final carUnit = automobile['ac or non-ac'] ?? '';
+                        final capacity = automobile['capacity'] ?? '';
+                        final dailyPrice = automobile['daily_price'] ?? '';
+                        final monthlyPrice = automobile['monthly_price'] ?? '';
+                        final location = automobile['location'] ?? '';
+                        final description = automobile['description'] ?? '';
+                        final city = automobile['city'] ?? '';
+                        final gears = automobile['no_of_gear'] ?? '';
 
-                      return InkWell(
-                        onTap: (){
-                          Navigator.push(context,
+                        return InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
                               MaterialPageRoute(
-                                  builder: (context) => InformationOfAutomobile(
-                                    imageURL: imageUrls,
-                                    automobileName: name,
-                                    make: make,
-                                    model: model,
-                                    ac: carUnit,
-                                    capacity: capacity,
-                                    daily: dailyPrice,
-                                    monthly: monthlyPrice,
-                                    location: location,
-                                    description: description,
-                                    city: city,
-                                    gears: gears,
-                                  )));
-                        },
-                        child: Container(
-                          width: MediaQuery.of(context).size.width / 2 - 15,
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Column(
+                                builder: (context) => InformationOfAutomobile(
+                                  imageURL: imageUrls,
+                                  automobileName: name,
+                                  make: make,
+                                  model: model,
+                                  ac: carUnit,
+                                  capacity: capacity,
+                                  daily: dailyPrice,
+                                  monthly: monthlyPrice,
+                                  location: location,
+                                  description: description,
+                                  city: city,
+                                  gears: gears,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Row(
                             children: [
-                              Image.network(imageUrls.first),
-                              const SizedBox(height: 10),
-                              Row(
-                                children: [
-                                  const SizedBox(width: 55,),
-                                  Align(
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      name,
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
+                              Flexible(
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width / 2 - 15,
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Image.network(imageUrls.first),
+                                      const SizedBox(height: 10),
+                                      Text(
+                                        name,
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        'Make: $make',
+                                        style: const TextStyle(fontSize: 16),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Model: $model',
+                                        style: const TextStyle(fontSize: 16),
+                                      ),
+                                    ],
                                   ),
-                                  Align(
-                                    alignment: Alignment.bottomRight,
-                                    child: PopupMenuButton<String>(
-                                      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                                        const PopupMenuItem<String>(
-                                          value: 'edit',
-                                          child: Text('Edit'),
-                                        ),
-                                        const PopupMenuItem<String>(
-                                          value: 'delete',
-                                          child: Text('Delete'),
-                                        ),
-                                      ],
-                                      onSelected: (String value) {
-                                        if (value == 'edit') {
-                                          // Perform edit action
-                                        } else if (value == 'delete') {
-                                          // Perform delete action
-                                        }
-                                      },
-                                      icon: const Icon(Icons.more_vert),
-                                    ),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Flexible(
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width / 2 - 15,
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Make: $make',
-                                style: const TextStyle(fontSize: 16),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Model: $model',
-                                style: const TextStyle(fontSize: 16),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Image.network(imageUrls.first),
+                                      const SizedBox(height: 10),
+                                      Text(
+                                        name,
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        'Make: $make',
+                                        style: const TextStyle(fontSize: 16),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Model: $model',
+                                        style: const TextStyle(fontSize: 16),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
                             ],
                           ),
-                        ),
-                      );
-                    }).toList(),
+                        );
+                      }).toList(),
+                    ),
                   ),
                 );
               }

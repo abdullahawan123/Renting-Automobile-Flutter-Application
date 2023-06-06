@@ -244,7 +244,7 @@ class _BO_DetailsState extends State<BO_Details> {
         },
         tooltip: 'Upload',
         child: loading
-            ? const CircularProgressIndicator(strokeWidth: 4, color: Color(0xFF03DAC6),)
+            ? const CircularProgressIndicator(strokeWidth: 4, color: Colors.white,)
             : const Icon(Icons.file_upload),
       ),
     );
