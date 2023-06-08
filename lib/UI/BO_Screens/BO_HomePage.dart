@@ -4,7 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wheel_for_a_while/UI/Authentication/Login.dart';
 import 'package:wheel_for_a_while/UI/BO_Screens/BO_Details.dart';
+import 'package:wheel_for_a_while/UI/BO_Screens/BO_Notification.dart';
 import 'package:wheel_for_a_while/UI/BO_Screens/InfomationOfAutomobile.dart';
+import 'package:wheel_for_a_while/UI/Screens/Profile.dart';
 import 'package:wheel_for_a_while/UI/utils/utilities.dart';
 
 class BO_HomePage extends StatefulWidget {
@@ -74,12 +76,16 @@ class _BO_HomePageState extends State<BO_HomePage> {
               ListTile(
                 leading: const Icon(Icons.person),
                 title: const Text('Profile'),
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(username: "$fName $lName", email: email,)));
+                },
               ),
               ListTile(
                 leading: const Icon(Icons.notifications),
                 title: const Text('Notification'),
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const BO_Notification()));
+                },
               ),
               ListTile(
                 leading: const Icon(Icons.favorite_border),
@@ -186,42 +192,7 @@ class _BO_HomePageState extends State<BO_HomePage> {
                           },
                           child: Row(
                             children: [
-                              Flexible(
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width / 2 - 15,
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.grey),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Image.network(imageUrls.first),
-                                      const SizedBox(height: 10),
-                                      Text(
-                                        name,
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                        'Make: $make',
-                                        style: const TextStyle(fontSize: 16),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        'Model: $model',
-                                        style: const TextStyle(fontSize: 16),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Flexible(
+                              Expanded(
                                 child: Container(
                                   width: MediaQuery.of(context).size.width / 2 - 15,
                                   padding: const EdgeInsets.all(10),
@@ -303,7 +274,3 @@ class _BO_HomePageState extends State<BO_HomePage> {
     }
   }
 }
-
-
-
-

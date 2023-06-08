@@ -6,6 +6,7 @@ import 'package:wheel_for_a_while/UI/Authentication/Login.dart';
 import 'package:wheel_for_a_while/UI/Screens/BikeOption.dart';
 import 'package:wheel_for_a_while/UI/Screens/CarOption.dart';
 import 'package:wheel_for_a_while/UI/Screens/Notification.dart';
+import 'package:wheel_for_a_while/UI/Screens/Profile.dart';
 import 'package:wheel_for_a_while/UI/Widgets/hexStringToColor.dart';
 import 'package:wheel_for_a_while/UI/utils/utilities.dart';
 
@@ -108,12 +109,16 @@ class _HomepageState extends State<Homepage> {
               ListTile(
                 leading: const Icon(Icons.person_outline_outlined),
                 title: const Text('Profile'),
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(username: "$fName $lName", email: email,)));
+                },
               ),
               ListTile(
                 leading: const Icon(Icons.notifications_outlined),
                 title: const Text('Notification'),
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const NotificationSection()));
+                },
               ),
               ListTile(
                 leading: const Icon(Icons.favorite_border_outlined),

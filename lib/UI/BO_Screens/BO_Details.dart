@@ -210,8 +210,8 @@ class _BO_DetailsState extends State<BO_Details> {
                 _monthlyPriceController.text.isEmpty ||
                 _descriptionController.text.isEmpty ||
                 _locationController.text.isEmpty ||
-                _cityController.text.isEmpty
-            ){
+                _cityController.text.isEmpty)
+            {
               showDialog(
                 context: context,
                 builder: (BuildContext context) {

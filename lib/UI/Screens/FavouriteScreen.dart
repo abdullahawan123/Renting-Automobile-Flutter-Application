@@ -7,7 +7,7 @@ class FavoritesScreen extends StatefulWidget {
   final String make;
   final String model;
 
-  FavoritesScreen({
+  const FavoritesScreen({
     Key? key,
     required this.favorites,
     required this.name,
@@ -73,7 +73,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
             ),
             SizedBox(height: 16),
             Text(
-              'Favourite any automobile which you desire',
+              'Favourite any automobile, which you desire',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
