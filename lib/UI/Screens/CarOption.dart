@@ -1,14 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:wheel_for_a_while/UI/Screens/Booking.dart';
+import 'package:wheel_for_a_while/UI/Screens/DetailsOfAutomobile.dart';
+import 'package:wheel_for_a_while/UI/Screens/FavouriteScreen.dart';
 
 class CarOption extends StatefulWidget {
-  const CarOption({super.key});
+  const CarOption({Key? key}) : super(key: key);
 
   @override
   _CarOptionState createState() => _CarOptionState();
 }
 
 class _CarOptionState extends State<CarOption> {
+  List<String> favorites = [];
+  String name = '';
+  String make = '';
+  String model = '';
+
+  void toggleFavorite(String automobileId) {
+    setState(() {
+      if (favorites.contains(automobileId)) {
+        favorites.remove(automobileId);
+      } else {
+        favorites.add(automobileId);
+      }
+    });
+  }
+
+  bool isFavorite(String automobileId) {
+    return favorites.contains(automobileId);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,11 +41,18 @@ class _CarOptionState extends State<CarOption> {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.arrow_back),
+                    icon: const Icon(Icons.arrow_back),
                     onPressed: () {
                       Navigator.pop(context);
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.favorite_border_outlined),
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => FavoritesScreen(favorites: favorites, name: name, make: make, model: model,   )));
                     },
                   ),
                 ],
@@ -63,15 +92,42 @@ class _CarOptionState extends State<CarOption> {
                     return ListView(
                       padding: const EdgeInsets.all(16),
                       children: snapshot.data!.docs.map((automobile) {
-                        final imageUrls = List<String>.from(automobile['image_URL']);
-                        final name = automobile['automobile_name'] ?? '';
-                        final make = automobile['make'] ?? '';
-                        final model = automobile['model'] ?? '';
+                        final automobileId = automobile.id;
+                        final imageUrls =
+                        List<String>.from(automobile['image_URL']);
+                        name = automobile['automobile_name'] ?? '';
+                        make = automobile['make'] ?? '';
+                        model = automobile['model'] ?? '';
+                        final carUnit = automobile['ac or non-ac'] ?? '';
+                        final capacity = automobile['capacity'] ?? '';
                         final dailyPrice = automobile['daily_price'] ?? '';
+                        final monthlyPrice = automobile['monthly_price'] ?? '';
+                        final location = automobile['location'] ?? '';
+                        final description = automobile['description'] ?? '';
+                        final city = automobile['city'] ?? '';
+                        final gears = automobile['no_of_gear'] ?? '';
 
                         return GestureDetector(
                           onTap: () {
-                            // Handle the car selection
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DetailsOfAutomobile(
+                                  imageURL: imageUrls,
+                                  automobileName: name,
+                                  make: make,
+                                  model: model,
+                                  ac: carUnit,
+                                  capacity: capacity,
+                                  daily: dailyPrice,
+                                  monthly: monthlyPrice,
+                                  gears: gears,
+                                  location: location,
+                                  description: description,
+                                  city: city,
+                                ),
+                              ),
+                            );
                           },
                           child: Container(
                             margin: const EdgeInsets.only(bottom: 16),
@@ -110,7 +166,10 @@ class _CarOptionState extends State<CarOption> {
                                 const SizedBox(height: 8),
                                 Row(
                                   children: [
-                                    const Icon(Icons.attach_money, color: Colors.green),
+                                    const Icon(
+                                      Icons.attach_money,
+                                      color: Colors.green,
+                                    ),
                                     const SizedBox(width: 4),
                                     Text(
                                       'Daily Price: $dailyPrice',
@@ -118,8 +177,33 @@ class _CarOptionState extends State<CarOption> {
                                     ),
                                   ],
                                 ),
+                                Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    IconButton(
+                                      onPressed: () =>
+                                          toggleFavorite(automobileId),
+                                      icon: Icon(
+                                        isFavorite(automobileId)
+                                            ? Icons.favorite
+                                            : Icons.favorite_border,
+                                        color: Colors.red,
+                                      ),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        double rent = double.parse(dailyPrice);
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) => Booking(automobileName: name, dailyRent: rent,)));
+                                      },
+                                      child: const Text('Book Now'),
+                                    ),
+                                  ],
+                                ),
                                 const SizedBox(height: 8),
-                                const Divider(color: Colors.blueGrey,),
+                                const Divider(
+                                  color: Colors.blueGrey,
+                                ),
                               ],
                             ),
                           ),
@@ -152,12 +236,20 @@ class _CarOptionState extends State<CarOption> {
                         ),
                       ),
                       Center(
-                          child: IconButton(
-                              onPressed: (){
-                                setState(() {
-                                  const CircularProgressIndicator(strokeWidth: 10, color: Colors.black12,);
-                                });
-                              }, icon: const Icon(Icons.refresh, color: Colors.blueGrey,))
+                        child: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              const CircularProgressIndicator(
+                                strokeWidth: 10,
+                                color: Colors.black12,
+                              );
+                            });
+                          },
+                          icon: const Icon(
+                            Icons.refresh,
+                            color: Colors.blueGrey,
+                          ),
+                        ),
                       )
                     ],
                   );

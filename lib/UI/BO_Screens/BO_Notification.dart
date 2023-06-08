@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:wheel_for_a_while/UI/Widgets/hexStringToColor.dart';
 
-class NotificationSection extends StatefulWidget {
-  const NotificationSection({Key? key}) : super(key: key);
+class BO_Notification extends StatefulWidget {
+  const BO_Notification({Key? key}) : super(key: key);
 
   @override
-  State<NotificationSection> createState() => _NotificationSectionState();
+  State<BO_Notification> createState() => _BO_NotificationState();
 }
 
-class _NotificationSectionState extends State<NotificationSection> {
+class _BO_NotificationState extends State<BO_Notification> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
