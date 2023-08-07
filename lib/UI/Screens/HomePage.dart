@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:wheel_for_a_while/Notification/notification_services.dart';
 import 'package:wheel_for_a_while/UI/Authentication/Login.dart';
 import 'package:wheel_for_a_while/UI/Screens/BikeOption.dart';
 import 'package:wheel_for_a_while/UI/Screens/CarOption.dart';
@@ -20,9 +21,11 @@ class Homepage extends StatefulWidget {
 class _HomepageState extends State<Homepage> {
   final auth = FirebaseAuth.instance;
   DateTime backButtonPressed = DateTime.now();
+  NotificationServices notificationServices = NotificationServices();
   String fName = 'Username ';
   String lName = 'not found';
   String email = 'No Email';
+  String userDeviceToken = '';
 
   void details(){
     User? user = auth.currentUser;
@@ -47,7 +50,19 @@ class _HomepageState extends State<Homepage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    details();
+    notificationServices.requestNotificationPermission();
+    notificationServices.isTokenRefresh();
+    notificationServices.firebaseInit(context);
+    notificationServices.getDeviceToken().then((value){
+      userDeviceToken = value ;
+      details();
+      saveUserDeviceToken();
+    });
+  }
+  
+  void saveUserDeviceToken(){
+    User? user = auth.currentUser;
+    FirebaseFirestore.instance.collection('users').doc(user?.uid).update({'user_device_token' : userDeviceToken});
   }
 
 

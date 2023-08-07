@@ -9,6 +9,12 @@ import 'package:wheel_for_a_while/UI/utils/utilities.dart';
 enum CategorySelection {Car, Bike}
 
 class BO_Details extends StatefulWidget {
+  String businessOwnerFCMToken = '' ;
+  BO_Details({
+    super.key,
+    required this.businessOwnerFCMToken
+  });
+
   @override
   _BO_DetailsState createState() => _BO_DetailsState();
 }
@@ -36,6 +42,7 @@ class _BO_DetailsState extends State<BO_Details> {
   bool loading = false ;
   CategorySelection? _categorySelection;
 
+  String get businessOwnerFCMToken => widget.businessOwnerFCMToken;
 
   @override
   Widget build(BuildContext context) {
@@ -234,7 +241,7 @@ class _BO_DetailsState extends State<BO_Details> {
               setState(() {
                 loading = true ;
               });
-              uploadFunction(_selectedList);
+              uploadFunction(_selectedList, businessOwnerFCMToken);
             }
 
           }else{
@@ -250,7 +257,7 @@ class _BO_DetailsState extends State<BO_Details> {
     );
   }
 
-  void uploadFunction(List<XFile> images) async {
+  void uploadFunction(List<XFile> images, String deviceToken) async {
     List<String> imageUrls = [];
     for (int i = 0; i < images.length; i++) {
       String imageUrl = await uploadFile(images[i]);
@@ -259,7 +266,7 @@ class _BO_DetailsState extends State<BO_Details> {
       }
     }
     if (imageUrls.isNotEmpty) {
-      saveDataToFirestore(imageUrls);
+      saveDataToFirestore(imageUrls, deviceToken);
     }
   }
 
@@ -278,7 +285,7 @@ class _BO_DetailsState extends State<BO_Details> {
     }
   }
 
-  void saveDataToFirestore(List<String> imageUrls) {
+  void saveDataToFirestore(List<String> imageUrls, String deviceToken) {
     var user = _auth.currentUser;
     Map<String, dynamic> data = {
       'user_id' : user?.uid,
@@ -295,7 +302,7 @@ class _BO_DetailsState extends State<BO_Details> {
       'daily_price': _dailyPriceController.text,
       'monthly_price': _monthlyPriceController.text,
       'image_URL': imageUrls,
-
+      'device_token' : deviceToken,
     };
 
     var id = "${DateTime.now().millisecondsSinceEpoch}";

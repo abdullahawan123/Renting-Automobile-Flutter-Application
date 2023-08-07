@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:wheel_for_a_while/Notification/notification_services.dart';
 import 'package:wheel_for_a_while/UI/Authentication/Login.dart';
 import 'package:wheel_for_a_while/UI/BO_Screens/BO_Details.dart';
 import 'package:wheel_for_a_while/UI/BO_Screens/BO_Notification.dart';
@@ -16,7 +17,9 @@ class BO_HomePage extends StatefulWidget {
 
 class _BO_HomePageState extends State<BO_HomePage> {
   String currentUserUid = '';
+  String businessOwnerFCMToken = '' ;
   final auth = FirebaseAuth.instance;
+  NotificationServices services = NotificationServices();
   DateTime backButtonPressed = DateTime.now();
   String fName = 'Username ';
   String lName = 'not found';
@@ -25,6 +28,11 @@ class _BO_HomePageState extends State<BO_HomePage> {
   @override
   void initState() {
     super.initState();
+    services.requestNotificationPermission();
+    services.isTokenRefresh();
+    services.getDeviceToken().then((value){
+      businessOwnerFCMToken = value ;
+    });
     details();
   }
 
@@ -136,10 +144,10 @@ class _BO_HomePageState extends State<BO_HomePage> {
                 );
               }
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Column(
+                return const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: const [
+                  children: [
                     Center(
                       child: CircularProgressIndicator(strokeWidth: 4, color: Color(0xFF03DAC6),),
                     ),
@@ -235,10 +243,10 @@ class _BO_HomePageState extends State<BO_HomePage> {
                 );
               }
 
-              return Center(
+              return const Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children: [
                     Text('No automobiles found.', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'ShantellSans'),),
                     Text('If you want to add an automobile, ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'ShantellSans'),),
                     Text('pressed the button below', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'ShantellSans'),),
@@ -253,7 +261,7 @@ class _BO_HomePageState extends State<BO_HomePage> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => BO_Details()),
+              MaterialPageRoute(builder: (context) => BO_Details(businessOwnerFCMToken: businessOwnerFCMToken,)),
             );
           },
           child: const Icon(Icons.add),

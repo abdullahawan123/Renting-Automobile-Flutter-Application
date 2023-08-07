@@ -17,7 +17,7 @@ class _ProfileState extends State<Profile> {
       appBar: AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0.0,
-      title: const Text("Notification"),
+      title: const Text("Profile"),
       centerTitle: true,
       flexibleSpace: Container(
         decoration: BoxDecoration(
