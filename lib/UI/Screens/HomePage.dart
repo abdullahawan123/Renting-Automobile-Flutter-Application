@@ -51,10 +51,14 @@ class _HomepageState extends State<Homepage> {
     // TODO: implement initState
     super.initState();
     notificationServices.requestNotificationPermission();
-    notificationServices.isTokenRefresh();
+    notificationServices.foregroundMessage();
     notificationServices.firebaseInit(context);
+    notificationServices.setupInteractMessage(context);
+    notificationServices.isTokenRefresh();
     notificationServices.getDeviceToken().then((value){
       userDeviceToken = value ;
+      print('Device Token: ');
+      print(userDeviceToken);
       details();
       saveUserDeviceToken();
     });
@@ -188,7 +192,7 @@ class _HomepageState extends State<Homepage> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => CarOption()),
+                          MaterialPageRoute(builder: (context) => const CarOption()),
                         );
                       },
                       icon: const Icon(Icons.directions_car, size: 60),
@@ -198,7 +202,7 @@ class _HomepageState extends State<Homepage> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => BikeOption()),
+                          MaterialPageRoute(builder: (context) => const BikeOption()),
                         );
                       },
                       icon: const Icon(Icons.motorcycle, size: 60),
@@ -207,11 +211,11 @@ class _HomepageState extends State<Homepage> {
                   ],
                 ),
                 const SizedBox(height: 25,),
-                Column(
+                const Column(
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: const [
+                      children: [
                         Padding(
                           padding: EdgeInsets.only(left: 25),
                           child: Text(

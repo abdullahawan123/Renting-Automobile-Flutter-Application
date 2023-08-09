@@ -29,6 +29,9 @@ class _BO_HomePageState extends State<BO_HomePage> {
   void initState() {
     super.initState();
     services.requestNotificationPermission();
+    services.foregroundMessage();
+    services.firebaseInit(context);
+    services.setupInteractMessage(context);
     services.isTokenRefresh();
     services.getDeviceToken().then((value){
       businessOwnerFCMToken = value ;
