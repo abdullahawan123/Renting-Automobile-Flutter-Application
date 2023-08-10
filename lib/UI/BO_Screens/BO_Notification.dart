@@ -1,21 +1,43 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:wheel_for_a_while/UI/Widgets/hexStringToColor.dart';
 
-class BO_Notification extends StatefulWidget {
-  const BO_Notification({Key? key}) : super(key: key);
+class NotificationSectionBO extends StatefulWidget {
+  const NotificationSectionBO({Key? key}) : super(key: key);
 
   @override
-  State<BO_Notification> createState() => _BO_NotificationState();
+  State<NotificationSectionBO> createState() => _NotificationSectionBOState();
 }
 
-class _BO_NotificationState extends State<BO_Notification> {
+class _NotificationSectionBOState extends State<NotificationSectionBO> {
+  final List<RemoteMessage> notifications = []; // List to store received notifications
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Initialize Firebase Messaging
+    FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    // Add listener to receive incoming notifications
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      setState(() {
+        notifications.add(message); // Add the received notification to the list
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0.0,
-        title: const Text("Notification"),
+        title: const Text("Business Owner Notification"),
         centerTitle: true,
         flexibleSpace: Container(
           decoration: BoxDecoration(
@@ -35,10 +57,11 @@ class _BO_NotificationState extends State<BO_Notification> {
           ),
         ),
       ),
-      body: Center(
+      body: notifications.isEmpty
+          ? const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
+          children: [
             Icon(
               Icons.notifications_off,
               size: 64,
@@ -55,6 +78,36 @@ class _BO_NotificationState extends State<BO_Notification> {
             ),
           ],
         ),
+      )
+          : ListView.builder(
+        itemCount: notifications.length,
+        itemBuilder: (context, index) {
+          final notification = notifications[index];
+          return ListTile(
+            title: Text(notification.notification?.title ?? 'No Title'),
+            subtitle:
+            Text(notification.notification?.body ?? 'No Body'),
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text(notification.notification?.title ?? ''),
+                  content: Text(notification.notification?.body ?? ''),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        // Handle tapping on a notification
+                        // You can navigate to a new screen or take any action here
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Close'),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }

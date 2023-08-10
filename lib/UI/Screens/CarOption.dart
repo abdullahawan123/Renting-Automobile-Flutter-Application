@@ -52,7 +52,7 @@ class _CarOptionState extends State<CarOption> {
                   IconButton(
                     icon: const Icon(Icons.favorite_border_outlined),
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => FavoritesScreen(favorites: favorites, name: name, make: make, model: model,   )));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => FavoritesScreen(favorites: favorites, name: name, make: make, model: model,)));
                     },
                   ),
                 ],
@@ -106,6 +106,7 @@ class _CarOptionState extends State<CarOption> {
                         final description = automobile['description'] ?? '';
                         final city = automobile['city'] ?? '';
                         final gears = automobile['no_of_gear'] ?? '';
+                        final deviceToken = automobile['device_token'] ?? '';
 
                         return GestureDetector(
                           onTap: () {
@@ -125,6 +126,7 @@ class _CarOptionState extends State<CarOption> {
                                   location: location,
                                   description: description,
                                   city: city,
+                                  device_token: deviceToken,
                                 ),
                               ),
                             );
@@ -194,7 +196,7 @@ class _CarOptionState extends State<CarOption> {
                                     ElevatedButton(
                                       onPressed: () {
                                         double rent = double.parse(dailyPrice);
-                                        Navigator.push(context, MaterialPageRoute(builder: (context) => Booking(automobileName: name, dailyRent: rent,)));
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) => Booking(automobileName: name, dailyRent: rent,make: make, model: model, deviceToken: deviceToken,)));
                                       },
                                       child: const Text('Book Now'),
                                     ),

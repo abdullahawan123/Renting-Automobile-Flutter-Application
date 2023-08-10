@@ -3,7 +3,7 @@ import 'package:wheel_for_a_while/UI/Screens/Booking.dart';
 
 class DetailsOfAutomobile extends StatefulWidget {
   List<String> imageURL;
-  String automobileName, make, model, ac, capacity, daily, monthly, gears, location, description, city;
+  String automobileName, make, model, ac, capacity, daily, monthly, gears, location, description, city, device_token;
 
   DetailsOfAutomobile({
     Key? key,
@@ -19,6 +19,7 @@ class DetailsOfAutomobile extends StatefulWidget {
     required this.location,
     required this.description,
     required this.city,
+    required this.device_token,
   }) : super(key: key);
 
   @override
@@ -119,7 +120,13 @@ class _DetailsOfAutomobileState extends State<DetailsOfAutomobile> {
                       child: ElevatedButton(
                         onPressed: () {
                           double rent = double.parse(widget.daily);
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => Booking(automobileName: widget.automobileName, dailyRent: rent,)));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => Booking(
+                            automobileName: widget.automobileName,
+                            dailyRent: rent,
+                            make: widget.make,
+                            model: widget.model,
+                            deviceToken: widget.device_token,
+                          )));
                         },
                         child: const Text('Book Now'),
                       ),

@@ -106,6 +106,7 @@ class _BikeOptionState extends State<BikeOption> {
                         final description = automobile['description'] ?? '';
                         final city = automobile['city'] ?? '';
                         final gears = automobile['no_of_gear'] ?? '';
+                        final deviceToken = automobile['device_token'] ?? '';
 
                         return GestureDetector(
                           onTap: () {
@@ -125,6 +126,7 @@ class _BikeOptionState extends State<BikeOption> {
                                   location: location,
                                   description: description,
                                   city: city,
+                                  device_token: deviceToken,
                                 ),
                               ),
                             );
@@ -194,7 +196,7 @@ class _BikeOptionState extends State<BikeOption> {
                                     ElevatedButton(
                                       onPressed: () {
                                         double rent = double.parse(dailyPrice);
-                                        Navigator.push(context, MaterialPageRoute(builder: (context) => Booking(automobileName: name, dailyRent: rent,)));
+                                        Navigator.push(context, MaterialPageRoute(builder: (context) => Booking(automobileName: name, dailyRent: rent, make: make, model: model, deviceToken: deviceToken,)));
                                       },
                                       child: const Text('Book Now'),
                                     ),

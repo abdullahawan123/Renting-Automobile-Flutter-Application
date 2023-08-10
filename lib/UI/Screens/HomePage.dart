@@ -57,8 +57,6 @@ class _HomepageState extends State<Homepage> {
     notificationServices.isTokenRefresh();
     notificationServices.getDeviceToken().then((value){
       userDeviceToken = value ;
-      print('Device Token: ');
-      print(userDeviceToken);
       details();
       saveUserDeviceToken();
     });

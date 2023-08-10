@@ -4,13 +4,25 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:wheel_for_a_while/UI/Screens/Notification.dart';
 import 'package:wheel_for_a_while/UI/Widgets/hexStringToColor.dart';
+import 'package:wheel_for_a_while/UI/utils/utilities.dart';
 
 class Booking extends StatefulWidget {
   final String automobileName;
   final double dailyRent;
+  final String make;
+  final String model;
+  final String deviceToken;
 
-  const Booking({super.key, required this.automobileName, required this.dailyRent});
+  const Booking({
+    super.key,
+    required this.automobileName,
+    required this.dailyRent,
+    required this.make,
+    required this.model,
+    required this.deviceToken,
+  });
 
   @override
   _BookingState createState() => _BookingState();
@@ -73,16 +85,25 @@ class _BookingState extends State<Booking> {
   }
 
   void sendNotificationToBusinessOwner() async {
+
     var data ={
-      'to' : 'eAKfWeaDSj-dX_MnvZTQ2g:APA91bHv1KaE8doj0NWUer9IA6Rjw9IYZ9R0Ql86leI5r9ZUO7_5Nv1OkfCEO9h3A76ouLyHvWFPy484CGKVdYF52j4FkhiksjjInPm2qZOvF8c6euAXoxijAzVc5_zN9H9ornJqADVx',
+      'to' : widget.deviceToken,
       'notification' : {
-        'title' : 'Rent a Car',
-        'body' : 'User want to rent a car, if u like!',
+        'title' : 'Request send by a user',
+        'body' : 'User want to rent a car, ${widget.automobileName}',
       },
       'data' : {
         'type' : 'notification',
-        'id' : 'Asif Taj',
-      }
+        'id' : 'user',
+        'bookingDetails': { // Add the booking details as a nested object
+          'automobileName': widget.automobileName,
+          'rentalDays': rentalDays,
+          'address': location,
+          'totalRent': totalRent.toStringAsFixed(2),
+          'userID' : _auth.currentUser!.uid,
+        },
+      },
+
     };
     await http.post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
     body: jsonEncode(data),
@@ -91,9 +112,11 @@ class _BookingState extends State<Booking> {
         'Authorization' : 'key=AAAAwaQ0nKk:APA91bFuX0FTXuU78-vi7w0kl-IkgB_alrYrAyUDXVODxxJQNZ_3TxS3bYxgafp0_KDr3OMptSJ7RI2h_huUbwHSIz96_qnzaz5DCsIXbA5abE45RsMqCcrDM6RNGRYgFcaRI0GPM7aV'
       }
     ).then((value) {
-      debugPrint(value.body.toString());
+      Utils().toastMessage1('Request send');
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const NotificationSection()));
     }).onError((error, stackTrace) {
-      debugPrint(error.toString());
+      Utils().toastMessage(error.toString());
     });
   }
 

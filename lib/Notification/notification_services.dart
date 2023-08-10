@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:wheel_for_a_while/UI/BO_Screens/BO_Notification.dart';
+import 'package:wheel_for_a_while/UI/Screens/Notification.dart';
 
 
 
@@ -135,9 +136,7 @@ class NotificationServices {
         notificationDetails ,
       );
     });
-
   }
-
   //function to get device token on which we will send the notifications
   Future<String> getDeviceToken() async {
     String? token = await messaging.getToken();
@@ -152,30 +151,28 @@ class NotificationServices {
       }
     });
   }
-
   //handle tap on notification when app is in background or terminated
   Future<void> setupInteractMessage(BuildContext context)async{
-
     // when app is terminated
     RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
 
     if(initialMessage != null){
       handleMessage(context, initialMessage);
     }
-
-
     //when app ins background
     FirebaseMessaging.onMessageOpenedApp.listen((event) {
       handleMessage(context, event);
     });
-
   }
 
   void handleMessage(BuildContext context, RemoteMessage message) {
-
-    if(message.data['type'] =='notification'){
+    if(message.data['id'] == 'user'){
       Navigator.push(context,
-          MaterialPageRoute(builder: (context) => const BO_Notification()));
+          MaterialPageRoute(builder: (context) => const NotificationSectionBO()));
+    }
+    else if(message.data['id'] == 'business_owner'){
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => const NotificationSection()));
     }
   }
 
@@ -187,6 +184,4 @@ class NotificationServices {
       sound: true,
     );
   }
-
-
 }

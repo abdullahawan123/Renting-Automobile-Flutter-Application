@@ -35,8 +35,9 @@ class _BO_HomePageState extends State<BO_HomePage> {
     services.isTokenRefresh();
     services.getDeviceToken().then((value){
       businessOwnerFCMToken = value ;
+      details();
+      saveUserDeviceToken();
     });
-    details();
   }
 
   void details(){
@@ -58,6 +59,11 @@ class _BO_HomePageState extends State<BO_HomePage> {
         Utils().toastMessage('Unable to load username & email');
       }
     });
+  }
+
+  void saveUserDeviceToken(){
+    User? user = auth.currentUser;
+    FirebaseFirestore.instance.collection('users').doc(user?.uid).update({'user_device_token' : businessOwnerFCMToken});
   }
 
   @override
@@ -95,7 +101,7 @@ class _BO_HomePageState extends State<BO_HomePage> {
                 leading: const Icon(Icons.notifications),
                 title: const Text('Notification'),
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const BO_Notification()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const NotificationSectionBO()));
                 },
               ),
               ListTile(
