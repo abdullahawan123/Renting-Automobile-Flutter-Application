@@ -109,15 +109,15 @@ class _NotificationSectionState extends State<NotificationSection> {
         itemCount: notificationData.length,
         itemBuilder: (context, index) {
           return ListTile(
-            title: Text(address ?? 'No Title'),
-            subtitle: Text('$date $time '??' No Body' ),
+            title: Text(address),
+            subtitle: Text('$date $time ' ),
             leading: const Icon(Icons.notifications_outlined),
             onTap: () {
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: Text(address ?? 'No Title'),
-                  content: Text('$date $time '??' No Body'),
+                  title: Text(address),
+                  content: Text('$date $time '),
                   actions: [
                     TextButton(
                       onPressed: () {
