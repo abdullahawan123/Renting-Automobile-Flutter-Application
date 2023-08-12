@@ -1,6 +1,8 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:wheel_for_a_while/UI/Widgets/hexStringToColor.dart';
+import 'package:wheel_for_a_while/UI/utils/utilities.dart';
 
 class NotificationSection extends StatefulWidget {
   const NotificationSection({Key? key}) : super(key: key);
@@ -10,25 +12,49 @@ class NotificationSection extends StatefulWidget {
 }
 
 class _NotificationSectionState extends State<NotificationSection> {
-  final List<RemoteMessage> notifications = []; // List to store received notifications
+  List<Map<String, dynamic>> notificationData = [];
+  final _auth = FirebaseAuth.instance;
+  final firebaseFirestore = FirebaseFirestore.instance;
+  String address = '' ;
+  String date = '' ;
+  String time = '' ;
+  double totalRent = 0 ;
+  String status = '' ;
 
+  void getNotificationDetails(){
+    try{
+      firebaseFirestore.collection('Renting Request').doc(_auth.currentUser!.uid).get().then((DocumentSnapshot documentSnapshot){
+        if(documentSnapshot.exists){
+          address = documentSnapshot.get('Address');
+          date = documentSnapshot.get('Date');
+          time = documentSnapshot.get('Time');
+          totalRent = documentSnapshot.get('Total_rent');
+          status = documentSnapshot.get('status');
+          setState(() {
+            Map<String, dynamic> data = {
+              'Address' : address,
+              'Date' : date,
+              'Time' : time,
+              'Total Rent' : totalRent,
+              'Status' : status,
+            };
+            notificationData.add(data);
+          });
+        }
+        else{
+          Utils().toastMessage('Unable to load data');
+        }
+      });
+    }catch(e){
+      Utils().toastMessage1(e.toString());
+    }
+
+  }
   @override
   void initState() {
     super.initState();
+    getNotificationDetails();
 
-    // Initialize Firebase Messaging
-    FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-
-    // Add listener to receive incoming notifications
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      setState(() {
-        notifications.add(message); // Add the received notification to the list
-      });
-    });
   }
 
   @override
@@ -57,7 +83,7 @@ class _NotificationSectionState extends State<NotificationSection> {
           ),
         ),
       ),
-      body: notifications.isEmpty
+      body: notificationData.isEmpty
           ? const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -80,24 +106,21 @@ class _NotificationSectionState extends State<NotificationSection> {
         ),
       )
           : ListView.builder(
-        itemCount: notifications.length,
+        itemCount: notificationData.length,
         itemBuilder: (context, index) {
-          final notification = notifications[index];
           return ListTile(
-            title: Text(notification.notification?.title ?? 'No Title'),
-            subtitle:
-            Text(notification.notification?.body ?? 'No Body'),
+            title: Text(address ?? 'No Title'),
+            subtitle: Text('$date $time '??' No Body' ),
+            leading: const Icon(Icons.notifications_outlined),
             onTap: () {
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: Text(notification.notification?.title ?? ''),
-                  content: Text(notification.notification?.body ?? ''),
+                  title: Text(address ?? 'No Title'),
+                  content: Text('$date $time '??' No Body'),
                   actions: [
                     TextButton(
                       onPressed: () {
-                        // Handle tapping on a notification
-                        // You can navigate to a new screen or take any action here
                         Navigator.pop(context);
                       },
                       child: const Text('Close'),

@@ -94,7 +94,7 @@ class _BookingState extends State<Booking> {
       },
       'data' : {
         'type' : 'notification',
-        'id' : 'user',
+        'id' : 'business_owner',
         'bookingDetails': { // Add the booking details as a nested object
           'automobileName': widget.automobileName,
           'rentalDays': rentalDays,
@@ -112,9 +112,15 @@ class _BookingState extends State<Booking> {
         'Authorization' : 'key=AAAAwaQ0nKk:APA91bFuX0FTXuU78-vi7w0kl-IkgB_alrYrAyUDXVODxxJQNZ_3TxS3bYxgafp0_KDr3OMptSJ7RI2h_huUbwHSIz96_qnzaz5DCsIXbA5abE45RsMqCcrDM6RNGRYgFcaRI0GPM7aV'
       }
     ).then((value) {
-      Utils().toastMessage1('Request send');
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => const NotificationSection()));
+      if (value.statusCode == 200){
+        Utils().toastMessage1('Request send');
+        print('Notification sent successfully: ${value.body}');
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const NotificationSection()));
+      }
+      else{
+        print('Notification sending failed: ${value.body}');
+      }
     }).onError((error, stackTrace) {
       Utils().toastMessage(error.toString());
     });
