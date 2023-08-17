@@ -38,10 +38,6 @@ class NotificationServices {
   }
 
   void firebaseInit(BuildContext context){
-
-
-
-
     FirebaseMessaging.onMessage.listen((message) {
 
       RemoteNotification? notification = message.notification ;
@@ -166,11 +162,11 @@ class NotificationServices {
   }
 
   void handleMessage(BuildContext context, RemoteMessage message) {
-    if(message.data['id'] == 'user'){
+    if(message.data['id'] == 'business_owner'){
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => const NotificationSectionBO()));
     }
-    else if(message.data['id'] == 'business_owner'){
+    else if(message.data['id'] == 'user'){
       Navigator.push(context,
           MaterialPageRoute(builder: (context) => const NotificationSection()));
     }

@@ -1,9 +1,9 @@
 import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:wheel_for_a_while/Notification/notification_services.dart';
 import 'package:wheel_for_a_while/UI/Screens/Notification.dart';
 import 'package:wheel_for_a_while/UI/Widgets/hexStringToColor.dart';
 import 'package:wheel_for_a_while/UI/utils/utilities.dart';
@@ -72,20 +72,28 @@ class _BookingState extends State<Booking> {
     return totalRent ;
   }
 
-  void storingDetails(){
+  void storingDetails() async {
+    NotificationServices notificationServices = NotificationServices();
+    String userToken = await notificationServices.getDeviceToken();
     User? user = _auth.currentUser;
+    DateTime parsedDate = DateTime.parse(selectedDate.toString());
     firebaseFirestore.collection('Renting Request').doc(user!.uid).set({
       'Rental_days' : rentalDays,
       'Address' : location,
       'Total_rent' : totalRent,
-      'Date' : selectedDate.toString(),
+      'Automobile' : widget.automobileName,
+      'Make' : widget.make,
+      'Model' : widget.model,
+      'User ID' : user.uid,
+      'Date' : parsedDate,
       'Time' : selectedTime.toString(),
       'status' : 'Pending',
+      'User_Device_Token' : userToken,
+      'Business_Owner_Device_Token' : widget.deviceToken,
     });
   }
 
   void sendNotificationToBusinessOwner() async {
-
     var data ={
       'to' : widget.deviceToken,
       'notification' : {
@@ -100,7 +108,6 @@ class _BookingState extends State<Booking> {
           'rentalDays': rentalDays,
           'address': location,
           'totalRent': totalRent.toStringAsFixed(2),
-          'userID' : _auth.currentUser!.uid,
         },
       },
 
@@ -114,12 +121,11 @@ class _BookingState extends State<Booking> {
     ).then((value) {
       if (value.statusCode == 200){
         Utils().toastMessage1('Request send');
-        print('Notification sent successfully: ${value.body}');
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => const NotificationSection()));
       }
       else{
-        print('Notification sending failed: ${value.body}');
+        Utils().toastMessage('Request sending failed, try again!');
       }
     }).onError((error, stackTrace) {
       Utils().toastMessage(error.toString());

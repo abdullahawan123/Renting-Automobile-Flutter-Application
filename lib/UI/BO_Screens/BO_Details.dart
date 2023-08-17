@@ -40,6 +40,7 @@ class _BO_DetailsState extends State<BO_Details> {
   final ImagePicker _picker = ImagePicker();
   final List<XFile> _selectedList = [];
   bool loading = false ;
+  bool dataSaved = false ;
   CategorySelection? _categorySelection;
 
   String get businessOwnerFCMToken => widget.businessOwnerFCMToken;
@@ -207,47 +208,49 @@ class _BO_DetailsState extends State<BO_Details> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          if(_selectedList.isNotEmpty){
-            if(_nameController.text.isEmpty ||
-                _modelController.text.isEmpty ||
-                _capacityController.text.isEmpty ||
-                _makeController.text.isEmpty ||
-                _acController.text.isEmpty ||
-                _dailyPriceController.text.isEmpty ||
-                _monthlyPriceController.text.isEmpty ||
-                _descriptionController.text.isEmpty ||
-                _locationController.text.isEmpty ||
-                _cityController.text.isEmpty)
-            {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('Error'),
-                    content: const Text('Please fill in all fields'),
-                    actions: [
-                      TextButton(
-                        child: const Text('OK'),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    ],
-                  );
-                },
-              );
-            }
-            else{
-              setState(() {
-                loading = true ;
-              });
-              uploadFunction(_selectedList, businessOwnerFCMToken);
-            }
+          if(!dataSaved){
+            if(_selectedList.isNotEmpty){
+              if(_nameController.text.isEmpty ||
+                  _modelController.text.isEmpty ||
+                  _capacityController.text.isEmpty ||
+                  _makeController.text.isEmpty ||
+                  _acController.text.isEmpty ||
+                  _dailyPriceController.text.isEmpty ||
+                  _monthlyPriceController.text.isEmpty ||
+                  _descriptionController.text.isEmpty ||
+                  _locationController.text.isEmpty ||
+                  _cityController.text.isEmpty)
+              {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Error'),
+                      content: const Text('Please fill in all fields'),
+                      actions: [
+                        TextButton(
+                          child: const Text('OK'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              }
+              else{
+                setState(() {
+                  loading = true ;
+                  dataSaved = true ;
+                });
+                uploadFunction(_selectedList, businessOwnerFCMToken);
+              }
 
-          }else{
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please Select at least one image?')));
+            }else{
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please Select at least one image?')));
+            }
           }
-          
         },
         tooltip: 'Upload',
         child: loading
