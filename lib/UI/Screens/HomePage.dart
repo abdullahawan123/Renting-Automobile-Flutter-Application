@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wheel_for_a_while/Notification/notification_services.dart';
 import 'package:wheel_for_a_while/UI/Authentication/Login.dart';
 import 'package:wheel_for_a_while/UI/Screens/BikeOption.dart';
@@ -27,8 +28,10 @@ class _HomepageState extends State<Homepage> {
   String email = 'No Email';
   String userDeviceToken = '';
 
-  void details(){
+  void details() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     User? user = auth.currentUser;
+    sharedPreferences.setString('userID', user!.uid);
     FirebaseFirestore.instance
         .collection('users')
         .doc(user!.uid)

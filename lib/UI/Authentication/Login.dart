@@ -27,7 +27,6 @@ class _LoginState extends State<Login> {
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   void dispose() {
@@ -39,7 +38,7 @@ class _LoginState extends State<Login> {
 
   void route() {
     User? user = FirebaseAuth.instance.currentUser;
-    var keyK = FirebaseFirestore.instance
+    FirebaseFirestore.instance
         .collection('users')
         .doc(user!.uid)
         .get()
@@ -81,7 +80,6 @@ class _LoginState extends State<Login> {
     });
     if (_formKey.currentState!.validate()) {
       try {
-        UserCredential userCredential =
         await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email,
           password: password,

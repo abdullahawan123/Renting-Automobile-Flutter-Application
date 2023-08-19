@@ -25,6 +25,7 @@ class _NotificationSectionBOState extends State<NotificationSectionBO> {
   String automobile = '' ;
   String userID = '' ;
   String userDeviceToken = '' ;
+  String phoneNo = '' ;
 
   @override
   void initState() {
@@ -33,12 +34,23 @@ class _NotificationSectionBOState extends State<NotificationSectionBO> {
   }
 
   void _launchWhatsApp() async {
-    const url = "https://wa.me/923435562497?text=Hello%20World!";
+     var url = "https://wa.me/$phoneNo?text=Hello%20World!";
     if (await canLaunch(url)) {
       await launch(url);
     } else {
       throw 'Could not launch $url';
     }
+  }
+
+  void getPhoneNumberOfUser() async {
+    await firebaseFirestore.collection('users').doc(userID).get().then((DocumentSnapshot documentSnapshot){
+      if(documentSnapshot.exists){
+        phoneNo = documentSnapshot.get('Phone_No');
+      }
+      else{
+        Utils().toastMessage('Unable to load username & email');
+      }
+    });
   }
 
 
@@ -134,7 +146,6 @@ class _NotificationSectionBOState extends State<NotificationSectionBO> {
                   onPressed: () {
                     firebaseFirestore.collection('Renting Request').doc(userID).update({'status' : 'Accepted'}).then((value) {
                       sendNotificationToUser('accept');
-                      notificationData.clear();
                       setState(() {
 
                       });

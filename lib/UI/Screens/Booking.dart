@@ -3,8 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wheel_for_a_while/Notification/notification_services.dart';
 import 'package:wheel_for_a_while/UI/Screens/Notification.dart';
+import 'package:wheel_for_a_while/UI/Screens/PhoneRegistrationScreen.dart';
 import 'package:wheel_for_a_while/UI/Widgets/hexStringToColor.dart';
 import 'package:wheel_for_a_while/UI/utils/utilities.dart';
 
@@ -38,6 +40,8 @@ class _BookingState extends State<Booking> {
   double totalRent = 0 ;
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
+  bool isNumberAvailable = false ;
+  bool loading = false ;
 
   void _showDatePicker() async {
     final DateTime? pickedDate = await showDatePicker(
@@ -75,6 +79,8 @@ class _BookingState extends State<Booking> {
   void storingDetails() async {
     NotificationServices notificationServices = NotificationServices();
     String userToken = await notificationServices.getDeviceToken();
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String id = sharedPreferences.getString('userID')!;
     User? user = _auth.currentUser;
     DateTime parsedDate = DateTime.parse(selectedDate.toString());
     firebaseFirestore.collection('Renting Request').doc(user!.uid).set({
@@ -84,13 +90,26 @@ class _BookingState extends State<Booking> {
       'Automobile' : widget.automobileName,
       'Make' : widget.make,
       'Model' : widget.model,
-      'User ID' : user.uid,
+      'User ID' : id,
       'Date' : parsedDate,
       'Time' : selectedTime.toString(),
       'status' : 'Pending',
       'User_Device_Token' : userToken,
       'Business_Owner_Device_Token' : widget.deviceToken,
     });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    addressController.dispose();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
   }
 
   void sendNotificationToBusinessOwner() async {
@@ -278,18 +297,42 @@ class _BookingState extends State<Booking> {
             const SizedBox(height: 24),
             Center(
               child: ElevatedButton(
-                onPressed: () {
-                  if(_key.currentState!.validate()){
-                    storingDetails();
-                    sendNotificationToBusinessOwner();
+                onPressed: () async {
+                  setState(() {
+                    loading = true ;
+                  });
+                  SharedPreferences sp = await SharedPreferences.getInstance();
+                  bool decision = sp.getBool('isNumber') ?? false;
+                  if(decision){
+                    if(_key.currentState!.validate()){
+                      storingDetails();
+                      sendNotificationToBusinessOwner();
+                      setState(() {
+                        loading = false ;
+                      });
+                    }else{
+                      setState(() {
+                        loading = false ;
+                      });
+                      Utils().toastMessage('Some error occur? Try again later!');
+                    }
+                  }else{
+                    goToPhoneRegistration();
                   }
                 },
-                child: const Text('Rent it Now'),
+                child: loading ? const CircularProgressIndicator(strokeWidth: 4, color: Color(0xFF03DAC6),)  : const Text('Rent it Now'),
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+  void goToPhoneRegistration(){
+    Navigator.push(context,
+        MaterialPageRoute(
+            builder: (context) => const PhoneRegistration()
+        )
     );
   }
 }
