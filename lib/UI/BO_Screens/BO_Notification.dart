@@ -31,10 +31,12 @@ class _NotificationSectionBOState extends State<NotificationSectionBO> {
   void initState() {
     super.initState();
     _checkAuthentication();
+    getPhoneNumberOfUser();
   }
 
-  void _launchWhatsApp() async {
-     var url = "https://wa.me/$phoneNo?text=Hello%20World!";
+  void _launchPhoneCall() async {
+    var url = "tel:$phoneNo";
+
     if (await canLaunch(url)) {
       await launch(url);
     } else {
@@ -52,8 +54,6 @@ class _NotificationSectionBOState extends State<NotificationSectionBO> {
       }
     });
   }
-
-
 
   void getNotificationDetails() async {
     NotificationServices notificationServices = NotificationServices();
@@ -171,7 +171,7 @@ class _NotificationSectionBOState extends State<NotificationSectionBO> {
                 ),
                 IconButton(
                   onPressed: () {
-                    _launchWhatsApp();
+                    _launchPhoneCall();
                   },
                   icon: const Icon(Icons.phone, color: Colors.blue),
                 ),

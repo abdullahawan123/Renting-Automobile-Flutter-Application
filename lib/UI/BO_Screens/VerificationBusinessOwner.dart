@@ -3,27 +3,26 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wheel_for_a_while/UI/Screens/HomePage.dart';
-import 'package:wheel_for_a_while/UI/Screens/PhoneRegistrationScreen.dart';
+import 'package:wheel_for_a_while/UI/Authentication/BusinessOwnerSignUp.dart';
+import 'package:wheel_for_a_while/UI/BO_Screens/BO_HomePage.dart';
 import 'package:wheel_for_a_while/UI/Widgets/hexStringToColor.dart';
 import 'package:wheel_for_a_while/UI/Widgets/imagesWidget.dart';
 import 'package:wheel_for_a_while/UI/utils/utilities.dart';
 
-class ScreenVerification extends StatefulWidget {
+class VerificationBusinessOwner extends StatefulWidget {
   final String verificationID;
   final String phoneNo;
-  const ScreenVerification({Key? key, required this.verificationID, required this.phoneNo}) : super(key: key);
+  const VerificationBusinessOwner({Key? key, required this.verificationID, required this.phoneNo}) : super(key: key);
 
   @override
-  State<ScreenVerification> createState() => _ScreenVerificationState();
+  State<VerificationBusinessOwner> createState() => _VerificationBusinessOwnerState();
 }
 
-class _ScreenVerificationState extends State<ScreenVerification> {
+class _VerificationBusinessOwnerState extends State<VerificationBusinessOwner> {
   final _auth = FirebaseAuth.instance;
   final pinController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   bool loading = false;
-  String uid = '';
 
   @override
   Widget build(BuildContext context) {
@@ -140,7 +139,6 @@ class _ScreenVerificationState extends State<ScreenVerification> {
                       try {
                         await _auth.signInWithCredential(credentials);
                         await savePhoneNoToFirestore(widget.phoneNo);
-                        await updateIsNumberToTrue();
                         setState(() {
                           loading = false;
                         });
@@ -183,7 +181,7 @@ class _ScreenVerificationState extends State<ScreenVerification> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const PhoneRegistration(),
+                        builder: (context) => const BusinessOwnerSignUp(),
                       ),
                     );
                   },
@@ -206,13 +204,13 @@ class _ScreenVerificationState extends State<ScreenVerification> {
   void goToScreen() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const Homepage()),
+      MaterialPageRoute(builder: (context) => BO_HomePage()),
     );
   }
 
   Future<void> savePhoneNoToFirestore(String phoneNumber) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    uid = sharedPreferences.getString('userID')!;
+    String uid = sharedPreferences.getString('ownerID')!;
     try {
       await FirebaseFirestore.instance
           .collection('users')
@@ -223,9 +221,5 @@ class _ScreenVerificationState extends State<ScreenVerification> {
     } catch (exception) {
       Utils().toastMessage(exception.toString());
     }
-  }
-  Future<void> updateIsNumberToTrue() async {
-    SharedPreferences sp = await SharedPreferences.getInstance();
-    sp.setBool('isNumber', true);
   }
 }

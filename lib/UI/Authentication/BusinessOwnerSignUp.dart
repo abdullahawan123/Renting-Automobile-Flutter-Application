@@ -1,21 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wheel_for_a_while/UI/Authentication/Login.dart';
 import 'package:flutter/material.dart';
+import 'package:wheel_for_a_while/UI/BO_Screens/VerificationBusinessOwner.dart';
 import 'package:wheel_for_a_while/UI/Widgets/RoundButton.dart';
 import 'package:wheel_for_a_while/UI/Widgets/hexStringToColor.dart';
 
 import '../utils/utilities.dart';
 
-class SignUp extends StatefulWidget {
-  const SignUp({Key? key}) : super(key: key);
+class BusinessOwnerSignUp extends StatefulWidget {
+  const BusinessOwnerSignUp({Key? key}) : super(key: key);
 
   @override
-  State<SignUp> createState() => _SignUpState();
+  State<BusinessOwnerSignUp> createState() => _BusinessOwnerSignUpState();
 }
 
-class _SignUpState extends State<SignUp> {
+class _BusinessOwnerSignUpState extends State<BusinessOwnerSignUp> {
 
   bool visibility = true;
   bool visibility1 = true;
@@ -25,14 +27,14 @@ class _SignUpState extends State<SignUp> {
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
+  final _phoneNoController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmController = TextEditingController();
 
   var options = [
-    'User',
+    'Business Owner',
   ];
-  var _currentItemSelected = "User";
-  var role = "User";
+  var role = "Business Owner";
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -46,10 +48,10 @@ class _SignUpState extends State<SignUp> {
           .createUserWithEmailAndPassword(email: email, password: password)
           .then((value) => {postDetailsToFirestore(email, role, firstname, lastname)})
           .catchError((e){
-            setState(() {
-              loading = false ;
-            });
-            Utils().toastMessage(e.toString());
+        setState(() {
+          loading = false ;
+        });
+        Utils().toastMessage(e.toString());
 
       });
     }
@@ -57,15 +59,16 @@ class _SignUpState extends State<SignUp> {
 
   postDetailsToFirestore(String email, String role, String firstname, String lastname) async {
     var user = _auth.currentUser;
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setString('ownerID', user!.uid);
     CollectionReference ref = FirebaseFirestore.instance.collection('users');
-    ref.doc(user!.uid).set({
+    ref.doc(user.uid).set({
       'email': _emailController.text,
       'role': role,
       'firstname': _firstNameController.text,
       'lastname': _lastNameController.text,
     });
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const Login()));
+
     setState(() {
       loading = false ;
     });
@@ -79,6 +82,7 @@ class _SignUpState extends State<SignUp> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmController.dispose();
+    _phoneNoController.dispose();
   }
 
   @override
@@ -219,6 +223,34 @@ class _SignUpState extends State<SignUp> {
                                 ),
                                 SizedBox(height: MediaQuery.of(context).size.height * 0.01,),
                                 TextFormField(
+                                  controller: _phoneNoController,
+                                  keyboardType: TextInputType.number,
+                                  cursorColor: Colors.white,
+                                  enableSuggestions: true,
+                                  autocorrect: true,
+                                  style: TextStyle(color: Colors.white.withOpacity(0.9)),
+                                  decoration: InputDecoration(
+                                    labelText: "Enter Phone Number",
+                                    labelStyle: TextStyle(color: Colors.white.withOpacity(0.9)),
+                                    filled: true,
+                                    floatingLabelBehavior: FloatingLabelBehavior.never,
+                                    fillColor: Colors.white.withOpacity(0.3),
+                                    prefixIcon: const Icon(Icons.phone_outlined, color: Colors.white70,),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(30.0),
+                                      borderSide: const BorderSide(width: 0, style: BorderStyle.none),
+                                    ),
+                                  ),
+                                  validator: (value){
+                                    if (value!.isEmpty){
+                                      return 'Enter your phone number';
+                                    } else {
+                                      return null;
+                                    }
+                                  },
+                                ),
+                                SizedBox(height: MediaQuery.of(context).size.height * 0.01,),
+                                TextFormField(
                                   controller: _passwordController,
                                   obscureText: visibility,
                                   keyboardType: TextInputType.text,
@@ -303,6 +335,31 @@ class _SignUpState extends State<SignUp> {
                             if(_formKey.currentState!.validate()){
                               if (_passwordController.text.toString() == _confirmController.text.toString()){
                                 signUp(_emailController.text, _passwordController.text, role, _firstNameController.text, _lastNameController.text);
+                                _auth.verifyPhoneNumber(
+                                    phoneNumber: _phoneNoController.text,
+                                    verificationCompleted: (_){
+                                      setState(() {
+                                        loading = false ;
+                                      });
+                                    },
+                                    verificationFailed: (error){
+                                      setState(() {
+                                        loading = false ;
+                                      });
+                                      Utils().toastMessage(error.toString());
+                                    },
+                                    codeSent: (String verificationID, int? token){
+                                      setState(() {
+                                        loading = false ;
+                                      });
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => VerificationBusinessOwner(verificationID: verificationID, phoneNo: _phoneNoController.text.toString(),)));
+                                    },
+                                    codeAutoRetrievalTimeout: (e){
+                                      setState(() {
+                                        loading = false ;
+                                      });
+                                    }
+                                );
                               }else{
                                 Utils().toastMessage("Password and Confirm Password should be same. Otherwise you won't be able to continue");
                               }

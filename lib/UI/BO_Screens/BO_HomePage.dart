@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wheel_for_a_while/Notification/notification_services.dart';
 import 'package:wheel_for_a_while/UI/Authentication/Login.dart';
 import 'package:wheel_for_a_while/UI/BO_Screens/BO_Details.dart';
@@ -40,11 +41,12 @@ class _BO_HomePageState extends State<BO_HomePage> {
     });
   }
 
-  void details(){
-    User? user = auth.currentUser;
+  void details() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    currentUserUid = sharedPreferences.getString('ownerID')!;
     FirebaseFirestore.instance
         .collection('users')
-        .doc(user?.uid)
+        .doc(currentUserUid)
         .get()
         .then((DocumentSnapshot documentSnapshot){
       if(documentSnapshot.exists){
@@ -52,7 +54,6 @@ class _BO_HomePageState extends State<BO_HomePage> {
         lName = documentSnapshot.get('lastname');
         email = documentSnapshot.get('email');
         setState(() {
-          currentUserUid = user!.uid.toString();
         });
       }
       else{
@@ -62,8 +63,7 @@ class _BO_HomePageState extends State<BO_HomePage> {
   }
 
   void saveUserDeviceToken(){
-    User? user = auth.currentUser;
-    FirebaseFirestore.instance.collection('users').doc(user?.uid).update({'user_device_token' : businessOwnerFCMToken});
+    FirebaseFirestore.instance.collection('users').doc(currentUserUid).update({'user_device_token' : businessOwnerFCMToken});
   }
 
   @override

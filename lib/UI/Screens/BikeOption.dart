@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:wheel_for_a_while/UI/Screens/Booking.dart';
 import 'package:wheel_for_a_while/UI/Screens/DetailsOfAutomobile.dart';
 import 'package:wheel_for_a_while/UI/Screens/FavouriteScreen.dart';
+import 'package:wheel_for_a_while/UI/Screens/HomePage.dart';
 
 class BikeOption extends StatefulWidget {
   const BikeOption({Key? key}) : super(key: key);
@@ -46,7 +47,7 @@ class _BikeOptionState extends State<BikeOption> {
                   IconButton(
                     icon: const Icon(Icons.arrow_back),
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const Homepage()));
                     },
                   ),
                   IconButton(

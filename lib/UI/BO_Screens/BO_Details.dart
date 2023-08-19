@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wheel_for_a_while/UI/utils/utilities.dart';
 
 enum CategorySelection {Car, Bike}
@@ -42,6 +43,7 @@ class _BO_DetailsState extends State<BO_Details> {
   bool loading = false ;
   bool dataSaved = false ;
   CategorySelection? _categorySelection;
+  String currentUserID = '' ;
 
   String get businessOwnerFCMToken => widget.businessOwnerFCMToken;
 
@@ -288,10 +290,11 @@ class _BO_DetailsState extends State<BO_Details> {
     }
   }
 
-  void saveDataToFirestore(List<String> imageUrls, String deviceToken) {
-    var user = _auth.currentUser;
+  void saveDataToFirestore(List<String> imageUrls, String deviceToken) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    currentUserID = sharedPreferences.getString('ownerID')!;
     Map<String, dynamic> data = {
-      'user_id' : user?.uid,
+      'user_id' : currentUserID,
       'automobile_name': _nameController.text,
       'category': _categorySelection.toString(),
       'model': _modelController.text,
