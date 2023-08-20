@@ -335,6 +335,9 @@ class _BusinessOwnerSignUpState extends State<BusinessOwnerSignUp> {
                             if(_formKey.currentState!.validate()){
                               if (_passwordController.text.toString() == _confirmController.text.toString()){
                                 signUp(_emailController.text, _passwordController.text, role, _firstNameController.text, _lastNameController.text);
+                                setState(() {
+                                  loading = true ;
+                                });
                                 _auth.verifyPhoneNumber(
                                     phoneNumber: _phoneNoController.text,
                                     verificationCompleted: (_){

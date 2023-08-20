@@ -35,14 +35,18 @@ class _NotificationSectionBOState extends State<NotificationSectionBO> {
   }
 
   void _launchPhoneCall() async {
-    var url = "tel:$phoneNo";
-
-    if (await canLaunch(url)) {
-      await launch(url);
+    if (phoneNo.isNotEmpty) {
+      var url = "https://wa.me/$phoneNo?text=Hello%20World!";
+      if (await canLaunch(url)) {
+        await launch(url);
+      } else {
+        throw 'Could not launch whatsapp';
+      }
     } else {
-      throw 'Could not launch $url';
+      Utils().toastMessage('Phone number is not available.');
     }
   }
+
 
   void getPhoneNumberOfUser() async {
     await firebaseFirestore.collection('users').doc(userID).get().then((DocumentSnapshot documentSnapshot){
@@ -50,7 +54,7 @@ class _NotificationSectionBOState extends State<NotificationSectionBO> {
         phoneNo = documentSnapshot.get('Phone_No');
       }
       else{
-        Utils().toastMessage('Unable to load username & email');
+        Utils().toastMessage('Unable to load phone number');
       }
     });
   }

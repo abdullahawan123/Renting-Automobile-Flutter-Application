@@ -33,7 +33,6 @@ class Booking extends StatefulWidget {
 class _BookingState extends State<Booking> {
   final addressController = TextEditingController();
   final _key = GlobalKey<FormState>();
-  final _auth = FirebaseAuth.instance;
   final firebaseFirestore = FirebaseFirestore.instance;
   int rentalDays = 1;
   String location = '';
@@ -81,9 +80,8 @@ class _BookingState extends State<Booking> {
     String userToken = await notificationServices.getDeviceToken();
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     String id = sharedPreferences.getString('userID')!;
-    User? user = _auth.currentUser;
     DateTime parsedDate = DateTime.parse(selectedDate.toString());
-    firebaseFirestore.collection('Renting Request').doc(user!.uid).set({
+    firebaseFirestore.collection('Renting Request').doc(id).set({
       'Rental_days' : rentalDays,
       'Address' : location,
       'Total_rent' : totalRent,
@@ -106,11 +104,6 @@ class _BookingState extends State<Booking> {
     addressController.dispose();
   }
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
 
   void sendNotificationToBusinessOwner() async {
     var data ={
@@ -303,6 +296,11 @@ class _BookingState extends State<Booking> {
                   });
                   SharedPreferences sp = await SharedPreferences.getInstance();
                   bool decision = sp.getBool('isNumber') ?? false;
+                  sp.setString('automobile', widget.automobileName);
+                  sp.setDouble('rent', widget.dailyRent);
+                  sp.setString('make', widget.make);
+                  sp.setString('model', widget.model);
+                  sp.setString('deviceToken', widget.deviceToken);
                   if(decision){
                     if(_key.currentState!.validate()){
                       storingDetails();
