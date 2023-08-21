@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wheel_for_a_while/UI/Authentication/BusinessOwnerSignUp.dart';
-import 'package:wheel_for_a_while/UI/Screens/Booking.dart';
+import 'package:wheel_for_a_while/UI/BO_Screens/BO_HomePage.dart';
+import 'package:wheel_for_a_while/UI/Screens/HomePage.dart';
 import 'package:wheel_for_a_while/UI/Widgets/hexStringToColor.dart';
 import 'package:wheel_for_a_while/UI/Widgets/imagesWidget.dart';
 import 'package:wheel_for_a_while/UI/utils/utilities.dart';
@@ -205,16 +206,11 @@ class _VerificationBusinessOwnerState extends State<VerificationBusinessOwner> {
     );
   }
 
-  void goToScreen() async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    String? automobile = sharedPreferences.getString('automobile');
-    double rent = sharedPreferences.getString('rent') as double;
-    String? make = sharedPreferences.getString('make');
-    String? model = sharedPreferences.getString('model');
-    String? token = sharedPreferences.getString('deviceToken');
+
+  void goToScreen() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => Booking(automobileName: automobile ?? '', dailyRent: rent, make: make ?? '', model: model ?? '', deviceToken: token ?? '')),
+      MaterialPageRoute(builder: (context) => BO_HomePage()),
     );
   }
 

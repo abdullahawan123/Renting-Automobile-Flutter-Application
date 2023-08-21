@@ -43,7 +43,7 @@ class _NotificationSectionBOState extends State<NotificationSectionBO> {
         throw 'Could not launch whatsapp';
       }
     } else {
-      Utils().toastMessage('Phone number is not available.');
+      Utils().toastMessage('WhatsApp is not installed!');
     }
   }
 

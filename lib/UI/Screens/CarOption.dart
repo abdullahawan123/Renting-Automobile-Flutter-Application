@@ -38,7 +38,7 @@ class _CarOptionState extends State<CarOption> {
   String selectedArea = 'All';
 
   List<String> locations = ['All'];
-  List<String> areas = ['All', 'Area 1', 'Area 2', 'Area 3'];
+  List<String> areas = ['All'];
 
   @override
   void initState() {
@@ -238,7 +238,7 @@ class _CarOptionState extends State<CarOption> {
                         final city = automobile['city'] ?? '';
                         final gears = automobile['no_of_gear'] ?? '';
                         final deviceToken = automobile['device_token'] ?? '';
-                        businessUserID = automobile['user_id'];
+                        businessUserID = automobile['user_id'] ?? '';
 
                         // Apply filters
                         if (searchQuery.isNotEmpty &&
@@ -265,6 +265,7 @@ class _CarOptionState extends State<CarOption> {
                                     description: description,
                                     city: city,
                                     device_token: deviceToken,
+                                    businessOwnerID: businessUserID,
                                   ),
                                 ),
                               );
@@ -368,6 +369,7 @@ class _CarOptionState extends State<CarOption> {
                                     description: description,
                                     city: city,
                                     device_token: deviceToken,
+                                    businessOwnerID: businessUserID,
                                   ),
                                 ),
                               );
@@ -470,6 +472,7 @@ class _CarOptionState extends State<CarOption> {
                                   description: description,
                                   city: city,
                                   device_token: deviceToken,
+                                  businessOwnerID: businessUserID,
                                 ),
                               ),
                             );

@@ -104,16 +104,6 @@ class _BO_HomePageState extends State<BO_HomePage> {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => const NotificationSectionBO()));
                 },
               ),
-              ListTile(
-                leading: const Icon(Icons.favorite_border),
-                title: const Text('Favorites'),
-                onTap: () {},
-              ),
-              ListTile(
-                leading: const Icon(Icons.shopping_cart),
-                title: const Text('Cart'),
-                onTap: () {},
-              ),
               const Divider(),
               ListTile(
                 leading: const Icon(Icons.settings),

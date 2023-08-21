@@ -27,7 +27,7 @@ class _NotificationSectionState extends State<NotificationSection> {
     try {
       firebaseFirestore
           .collection('Renting Request')
-          .doc(_auth.currentUser!.uid)
+          .doc('bE06UjOMaYZCk5cYGxL8vCbUlRF3')
           .get()
           .then((DocumentSnapshot documentSnapshot) {
         if (documentSnapshot.exists) {

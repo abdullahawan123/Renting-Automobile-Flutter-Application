@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wheel_for_a_while/UI/Screens/HomePage.dart';
+import 'package:wheel_for_a_while/UI/Screens/Booking.dart';
 import 'package:wheel_for_a_while/UI/Screens/PhoneRegistrationScreen.dart';
 import 'package:wheel_for_a_while/UI/Widgets/hexStringToColor.dart';
 import 'package:wheel_for_a_while/UI/Widgets/imagesWidget.dart';
@@ -203,10 +203,16 @@ class _ScreenVerificationState extends State<ScreenVerification> {
     );
   }
 
-  void goToScreen() {
+  void goToScreen() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String? automobile = sharedPreferences.getString('automobile');
+    double rent = sharedPreferences.getDouble('rent') as double;
+    String? make = sharedPreferences.getString('make');
+    String? model = sharedPreferences.getString('model');
+    String? token = sharedPreferences.getString('deviceToken');
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const Homepage()),
+      MaterialPageRoute(builder: (context) => Booking(automobileName: automobile ?? '', dailyRent: rent, make: make ?? '', model: model ?? '', deviceToken: token ?? '')),
     );
   }
 

@@ -7,6 +7,7 @@ import 'package:wheel_for_a_while/Notification/notification_services.dart';
 import 'package:wheel_for_a_while/UI/Authentication/Login.dart';
 import 'package:wheel_for_a_while/UI/Screens/BikeOption.dart';
 import 'package:wheel_for_a_while/UI/Screens/CarOption.dart';
+import 'package:wheel_for_a_while/UI/Screens/FavouriteScreen.dart';
 import 'package:wheel_for_a_while/UI/Screens/Notification.dart';
 import 'package:wheel_for_a_while/UI/Screens/Profile.dart';
 import 'package:wheel_for_a_while/UI/Widgets/hexStringToColor.dart';
@@ -143,17 +144,14 @@ class _HomepageState extends State<Homepage> {
               ListTile(
                 leading: const Icon(Icons.favorite_border_outlined),
                 title: const Text('Favorites'),
-                onTap: () {},
-              ),
-              ListTile(
-                leading: const Icon(Icons.shopping_cart_outlined),
-                title: const Text('Cart'),
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const FavoritesScreen(favorites: [''], name: 'name', model: 'model', make: 'make')));
+                },
               ),
               const Divider(),
               ListTile(
                 leading: const Icon(Icons.search_outlined),
-                title: const Text('Searching'),
+                title: const Text('Setting'),
                 onTap: () {},
               ),
               ListTile(

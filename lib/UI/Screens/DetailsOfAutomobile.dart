@@ -1,9 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:wheel_for_a_while/UI/Screens/Booking.dart';
+import 'package:wheel_for_a_while/UI/utils/utilities.dart';
 
 class DetailsOfAutomobile extends StatefulWidget {
   List<String> imageURL;
-  String automobileName, make, model, ac, capacity, daily, monthly, gears, location, description, city, device_token;
+  String automobileName, make, model, ac, capacity, daily, monthly, gears, location, description, city, device_token, businessOwnerID;
 
   DetailsOfAutomobile({
     Key? key,
@@ -20,6 +23,7 @@ class DetailsOfAutomobile extends StatefulWidget {
     required this.description,
     required this.city,
     required this.device_token,
+    required this.businessOwnerID,
   }) : super(key: key);
 
   @override
@@ -27,6 +31,27 @@ class DetailsOfAutomobile extends StatefulWidget {
 }
 
 class _DetailsOfAutomobileState extends State<DetailsOfAutomobile> {
+  
+  String phoneNo = '' ;
+  
+  void getPhoneNoOfBusinessOwner(){
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.businessOwnerID)
+        .get().then((DocumentSnapshot documentSnapshot){
+          if (documentSnapshot.exists){
+            phoneNo = documentSnapshot.get('Phone_No');
+          }
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getPhoneNoOfBusinessOwner();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -138,6 +163,9 @@ class _DetailsOfAutomobileState extends State<DetailsOfAutomobile> {
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(onPressed: (){
+        _launchPhoneCall();
+      }, child: const Icon(Icons.call, color: Colors.greenAccent,),),
     );
   }
 
@@ -182,5 +210,18 @@ class _DetailsOfAutomobileState extends State<DetailsOfAutomobile> {
         ],
       ),
     );
+  }
+
+  void _launchPhoneCall() async {
+    if (phoneNo.isNotEmpty) {
+      var url = "https://wa.me/$phoneNo?text=Hello%20World!";
+      if (await canLaunch(url)) {
+        await launch(url);
+      } else {
+        Utils().toastMessage('WhatsApp is not installed!');
+      }
+    } else {
+      throw 'Could not launch whatsapp';
+    }
   }
 }
