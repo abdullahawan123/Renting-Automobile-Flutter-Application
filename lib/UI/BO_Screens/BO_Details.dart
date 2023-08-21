@@ -4,11 +4,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wheel_for_a_while/UI/utils/utilities.dart';
 
 enum CategorySelection {Car, Bike}
 
 class BO_Details extends StatefulWidget {
+  String businessOwnerFCMToken = '' ;
+  BO_Details({
+    super.key,
+    required this.businessOwnerFCMToken
+  });
+
   @override
   _BO_DetailsState createState() => _BO_DetailsState();
 }
@@ -34,8 +41,11 @@ class _BO_DetailsState extends State<BO_Details> {
   final ImagePicker _picker = ImagePicker();
   final List<XFile> _selectedList = [];
   bool loading = false ;
+  bool dataSaved = false ;
   CategorySelection? _categorySelection;
+  String currentUserID = '' ;
 
+  String get businessOwnerFCMToken => widget.businessOwnerFCMToken;
 
   @override
   Widget build(BuildContext context) {
@@ -200,57 +210,59 @@ class _BO_DetailsState extends State<BO_Details> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          if(_selectedList.isNotEmpty){
-            if(_nameController.text.isEmpty ||
-                _modelController.text.isEmpty ||
-                _capacityController.text.isEmpty ||
-                _makeController.text.isEmpty ||
-                _acController.text.isEmpty ||
-                _dailyPriceController.text.isEmpty ||
-                _monthlyPriceController.text.isEmpty ||
-                _descriptionController.text.isEmpty ||
-                _locationController.text.isEmpty ||
-                _cityController.text.isEmpty
-            ){
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('Error'),
-                    content: const Text('Please fill in all fields'),
-                    actions: [
-                      TextButton(
-                        child: const Text('OK'),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    ],
-                  );
-                },
-              );
-            }
-            else{
-              setState(() {
-                loading = true ;
-              });
-              uploadFunction(_selectedList);
-            }
+          if(!dataSaved){
+            if(_selectedList.isNotEmpty){
+              if(_nameController.text.isEmpty ||
+                  _modelController.text.isEmpty ||
+                  _capacityController.text.isEmpty ||
+                  _makeController.text.isEmpty ||
+                  _acController.text.isEmpty ||
+                  _dailyPriceController.text.isEmpty ||
+                  _monthlyPriceController.text.isEmpty ||
+                  _descriptionController.text.isEmpty ||
+                  _locationController.text.isEmpty ||
+                  _cityController.text.isEmpty)
+              {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Error'),
+                      content: const Text('Please fill in all fields'),
+                      actions: [
+                        TextButton(
+                          child: const Text('OK'),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              }
+              else{
+                setState(() {
+                  loading = true ;
+                  dataSaved = true ;
+                });
+                uploadFunction(_selectedList, businessOwnerFCMToken);
+              }
 
-          }else{
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please Select at least one image?')));
+            }else{
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please Select at least one image?')));
+            }
           }
-          
         },
         tooltip: 'Upload',
         child: loading
-            ? const CircularProgressIndicator(strokeWidth: 4, color: Color(0xFF03DAC6),)
+            ? const CircularProgressIndicator(strokeWidth: 4, color: Colors.white,)
             : const Icon(Icons.file_upload),
       ),
     );
   }
 
-  void uploadFunction(List<XFile> images) async {
+  void uploadFunction(List<XFile> images, String deviceToken) async {
     List<String> imageUrls = [];
     for (int i = 0; i < images.length; i++) {
       String imageUrl = await uploadFile(images[i]);
@@ -259,7 +271,7 @@ class _BO_DetailsState extends State<BO_Details> {
       }
     }
     if (imageUrls.isNotEmpty) {
-      saveDataToFirestore(imageUrls);
+      saveDataToFirestore(imageUrls, deviceToken);
     }
   }
 
@@ -278,10 +290,11 @@ class _BO_DetailsState extends State<BO_Details> {
     }
   }
 
-  void saveDataToFirestore(List<String> imageUrls) {
-    var user = _auth.currentUser;
+  void saveDataToFirestore(List<String> imageUrls, String deviceToken) async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    currentUserID = sharedPreferences.getString('ownerID')!;
     Map<String, dynamic> data = {
-      'user_id' : user?.uid,
+      'user_id' : currentUserID,
       'automobile_name': _nameController.text,
       'category': _categorySelection.toString(),
       'model': _modelController.text,
@@ -295,7 +308,7 @@ class _BO_DetailsState extends State<BO_Details> {
       'daily_price': _dailyPriceController.text,
       'monthly_price': _monthlyPriceController.text,
       'image_URL': imageUrls,
-
+      'device_token' : deviceToken,
     };
 
     var id = "${DateTime.now().millisecondsSinceEpoch}";

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:wheel_for_a_while/UI/Authentication/BusinessOwnerSignUp.dart';
 import 'package:wheel_for_a_while/UI/Authentication/SignUp.dart';
 import 'package:wheel_for_a_while/UI/Authentication/forgot_password.dart';
 import 'package:wheel_for_a_while/UI/BO_Screens/BO_HomePage.dart';
@@ -27,7 +28,6 @@ class _LoginState extends State<Login> {
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   void dispose() {
@@ -39,7 +39,7 @@ class _LoginState extends State<Login> {
 
   void route() {
     User? user = FirebaseAuth.instance.currentUser;
-    var keyK = FirebaseFirestore.instance
+    FirebaseFirestore.instance
         .collection('users')
         .doc(user!.uid)
         .get()
@@ -81,7 +81,6 @@ class _LoginState extends State<Login> {
     });
     if (_formKey.currentState!.validate()) {
       try {
-        UserCredential userCredential =
         await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email,
           password: password,
@@ -233,7 +232,7 @@ class _LoginState extends State<Login> {
                               child: const Text('Forgot Password?', style: TextStyle(fontSize: 15,color: Colors.white),)),
                         ),
                         const SizedBox(height: 5),
-                        Row(
+                        Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Text("Don't have an account.", style: TextStyle(fontSize: 15, color: Colors.white),),
@@ -243,7 +242,14 @@ class _LoginState extends State<Login> {
                                       MaterialPageRoute(
                                           builder: (context) => const SignUp()));
                                 },
-                                child: const Text('Sign-Up', style: TextStyle(fontSize: 15),)),
+                                child: const Text('Sign-Up as User', style: TextStyle(fontSize: 15),)),
+                            TextButton(
+                                onPressed: (){
+                                  Navigator.push(context,
+                                      MaterialPageRoute(
+                                          builder: (context) => const BusinessOwnerSignUp()));
+                                },
+                                child: const Text('Sign-Up as Business Owner', style: TextStyle(fontSize: 15),)),
                           ],
                         ),
                       ],
