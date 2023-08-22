@@ -75,13 +75,14 @@ class _PhoneRegistrationState extends State<PhoneRegistration> {
                               children: [
                                 TextFormField(
                                   controller: _phoneController,
-                                  keyboardType: TextInputType.number,
+                                  keyboardType: TextInputType.phone,
                                   cursorColor: Colors.white,
                                   enableSuggestions: true,
                                   autocorrect: true,
                                   style: TextStyle(color: Colors.white.withOpacity(0.9)),
                                   decoration: InputDecoration(
-                                    labelText: "Enter phone number",
+                                    labelText: "Enter Phone Number",
+                                    hintText: '+923431234567',
                                     labelStyle: TextStyle(color: Colors.white.withOpacity(0.9)),
                                     filled: true,
                                     floatingLabelBehavior: FloatingLabelBehavior.never,
@@ -93,10 +94,11 @@ class _PhoneRegistrationState extends State<PhoneRegistration> {
                                     ),
                                   ),
                                   validator: (value){
-                                    if (value!.isEmpty){
-                                      return 'Enter your valid phone number';
+                                    if (value != null && value.length != 13){
+                                      return 'Enter your valid number';
+                                    } else {
+                                      return null;
                                     }
-                                    return null;
                                   },
                                 ),
                               ],
@@ -106,10 +108,10 @@ class _PhoneRegistrationState extends State<PhoneRegistration> {
                           title: "Enter",
                           loading: loading,
                           onTap: (){
-                            setState(() {
-                              loading = true ;
-                            });
                             if(_formKey.currentState!.validate()){
+                              setState(() {
+                                loading = true ;
+                              });
                               _auth.verifyPhoneNumber(
                                 phoneNumber: _phoneController.text,
                                   verificationCompleted: (_){
