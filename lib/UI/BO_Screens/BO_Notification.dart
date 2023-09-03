@@ -31,33 +31,21 @@ class _NotificationSectionBOState extends State<NotificationSectionBO> {
   void initState() {
     super.initState();
     _checkAuthentication();
-    getPhoneNumberOfUser();
   }
 
-  void _launchPhoneCall() async {
-    if (phoneNo.isNotEmpty) {
-      var url = "https://wa.me/$phoneNo?text=Hello%20World!";
+  void _launchPhoneCall(String number) async {
+    if (number.isNotEmpty) {
+      var url = "https://wa.me/$number?text=Hello%20World!";
       if (await canLaunch(url)) {
         await launch(url);
       } else {
-        throw 'Could not launch whatsapp';
+        Utils().toastMessage('WhatsApp is not installed!');
       }
     } else {
-      Utils().toastMessage('WhatsApp is not installed!');
+      throw 'Exception occur' ;
     }
   }
 
-
-  void getPhoneNumberOfUser() async {
-    await firebaseFirestore.collection('users').doc(userID).get().then((DocumentSnapshot documentSnapshot){
-      if(documentSnapshot.exists){
-        phoneNo = documentSnapshot.get('Phone_No');
-      }
-      else{
-        Utils().toastMessage('Unable to load phone number');
-      }
-    });
-  }
 
   void getNotificationDetails() async {
     NotificationServices notificationServices = NotificationServices();
@@ -175,7 +163,17 @@ class _NotificationSectionBOState extends State<NotificationSectionBO> {
                 ),
                 IconButton(
                   onPressed: () {
-                    _launchPhoneCall();
+                    firebaseFirestore.collection('users')
+                        .doc(userID)
+                        .get()
+                        .then((DocumentSnapshot documentSnapshot) {
+                          if (documentSnapshot.exists){
+                            phoneNo = documentSnapshot.get('Phone_No');
+                          }else{
+                            Utils().toastMessage("Phone Number doesn't exist");
+                          }
+                          _launchPhoneCall(phoneNo);
+                    });
                   },
                   icon: const Icon(Icons.phone, color: Colors.blue),
                 ),

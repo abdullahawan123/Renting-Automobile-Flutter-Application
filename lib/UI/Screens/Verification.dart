@@ -112,18 +112,6 @@ class _ScreenVerificationState extends State<ScreenVerification> {
               const SizedBox(
                 height: 35,
               ),
-              const Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    "RESEND",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800),
-                  )),
-              const SizedBox(
-                height: 28,
-              ),
               Align(
                 alignment: Alignment.center,
                 child: GestureDetector(
@@ -210,9 +198,10 @@ class _ScreenVerificationState extends State<ScreenVerification> {
     String? make = sharedPreferences.getString('make');
     String? model = sharedPreferences.getString('model');
     String? token = sharedPreferences.getString('deviceToken');
+    String? businessOwnerID =sharedPreferences.getString('businessOwnerID');
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => Booking(automobileName: automobile ?? '', dailyRent: rent, make: make ?? '', model: model ?? '', deviceToken: token ?? '')),
+      MaterialPageRoute(builder: (context) => Booking(automobileName: automobile ?? '', dailyRent: rent, make: make ?? '', model: model ?? '', deviceToken: token ?? '', businessOwnerID: businessOwnerID ?? '',)),
     );
   }
 

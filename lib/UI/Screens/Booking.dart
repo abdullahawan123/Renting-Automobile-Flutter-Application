@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:wheel_for_a_while/Notification/notification_services.dart';
 import 'package:wheel_for_a_while/UI/Screens/Notification.dart';
 import 'package:wheel_for_a_while/UI/Screens/PhoneRegistrationScreen.dart';
@@ -16,6 +16,7 @@ class Booking extends StatefulWidget {
   final String make;
   final String model;
   final String deviceToken;
+  final String businessOwnerID;
 
   const Booking({
     super.key,
@@ -24,6 +25,7 @@ class Booking extends StatefulWidget {
     required this.make,
     required this.model,
     required this.deviceToken,
+    required this.businessOwnerID,
   });
 
   @override
@@ -39,8 +41,10 @@ class _BookingState extends State<Booking> {
   double totalRent = 0 ;
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
+  String phoneNo = '' ;
   bool isNumberAvailable = false ;
   bool loading = false ;
+  bool isDriver = false ;
 
   void _showDatePicker() async {
     final DateTime? pickedDate = await showDatePicker(
@@ -142,6 +146,24 @@ class _BookingState extends State<Booking> {
     }).onError((error, stackTrace) {
       Utils().toastMessage(error.toString());
     });
+  }
+
+  void getPhoneNoOfBusinessOwner(){
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.businessOwnerID)
+        .get().then((DocumentSnapshot documentSnapshot){
+      if (documentSnapshot.exists){
+        phoneNo = documentSnapshot.get('Phone_No');
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getPhoneNoOfBusinessOwner();
   }
 
   @override
@@ -246,6 +268,21 @@ class _BookingState extends State<Booking> {
               ),
             ),
             const SizedBox(height: 16),
+            Row(
+              children: [
+                const Text('Driver: ', style: TextStyle(fontSize: 16),),
+                const SizedBox(width: 8),
+                Switch(
+                  value: isDriver,
+                  onChanged: (newValue) {
+                    setState(() {
+                      isDriver = newValue;
+                    });
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 15,),
             const Text(
               'Date and Time:',
               style: TextStyle(fontSize: 16),
@@ -301,7 +338,11 @@ class _BookingState extends State<Booking> {
                   sp.setString('make', widget.make);
                   sp.setString('model', widget.model);
                   sp.setString('deviceToken', widget.deviceToken);
-                  if(decision){
+                  sp.setString('businessOwnerID', widget.businessOwnerID);
+                  if(!isDriver){
+                    alertDialogue();
+                  }
+                  else if(decision){
                     if(_key.currentState!.validate()){
                       storingDetails();
                       sendNotificationToBusinessOwner();
@@ -312,7 +353,6 @@ class _BookingState extends State<Booking> {
                       setState(() {
                         loading = false ;
                       });
-                      Utils().toastMessage('Some error occur? Try again later!');
                     }
                   }else{
                     goToPhoneRegistration();
@@ -332,5 +372,46 @@ class _BookingState extends State<Booking> {
             builder: (context) => const PhoneRegistration()
         )
     );
+  }
+
+  void alertDialogue(){
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Cannot Rent Without Driver'),
+          content: const Text(
+            'You cannot rent a car without a driver. If you want to rent without a driver, please contact the owner.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+                setState(() {
+                  loading = false;
+                });
+              },
+              child: const Text('OK'),
+            ),
+            TextButton(onPressed: (){
+              _launchPhoneCall();
+            }, child: const Icon(Icons.call)),
+          ],
+        );
+      },
+    );
+  }
+
+  void _launchPhoneCall() async {
+    if (phoneNo.isNotEmpty) {
+      var url = "https://wa.me/$phoneNo?text=Hello%20World!";
+      if (await canLaunch(url)) {
+        await launch(url);
+      } else {
+        Utils().toastMessage('WhatsApp is not installed!');
+      }
+    } else {
+      throw 'Could not launch whatsapp';
+    }
   }
 }

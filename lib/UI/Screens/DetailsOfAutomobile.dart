@@ -151,6 +151,7 @@ class _DetailsOfAutomobileState extends State<DetailsOfAutomobile> {
                             make: widget.make,
                             model: widget.model,
                             deviceToken: widget.device_token,
+                            businessOwnerID: widget.businessOwnerID,
                           )));
                         },
                         child: const Text('Book Now'),

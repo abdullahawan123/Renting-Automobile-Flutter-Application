@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wheel_for_a_while/UI/Authentication/Login.dart';
 import 'package:wheel_for_a_while/UI/Widgets/hexStringToColor.dart';
 import 'package:wheel_for_a_while/UI/utils/utilities.dart';
@@ -22,12 +23,15 @@ class _NotificationSectionState extends State<NotificationSection> {
   String time = '';
   double totalRent = 0;
   String status = '';
+  String previousUserID = '' ;
 
-  void getNotificationDetails() {
+  void getNotificationDetails() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    previousUserID = sharedPreferences.getString('userID') ?? '';
     try {
       firebaseFirestore
           .collection('Renting Request')
-          .doc('bE06UjOMaYZCk5cYGxL8vCbUlRF3')
+          .doc(previousUserID)
           .get()
           .then((DocumentSnapshot documentSnapshot) {
         if (documentSnapshot.exists) {

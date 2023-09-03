@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:pinput/pinput.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wheel_for_a_while/UI/Authentication/Login.dart';
 import 'package:flutter/material.dart';
@@ -40,9 +41,6 @@ class _BusinessOwnerSignUpState extends State<BusinessOwnerSignUp> {
 
 
   void signUp(String email, String password, String role, String firstname, String lastname) async {
-    setState(() {
-      loading = true ;
-    });
     if (_formKey.currentState!.validate()) {
       await _auth
           .createUserWithEmailAndPassword(email: email, password: password)
@@ -224,13 +222,14 @@ class _BusinessOwnerSignUpState extends State<BusinessOwnerSignUp> {
                                 SizedBox(height: MediaQuery.of(context).size.height * 0.01,),
                                 TextFormField(
                                   controller: _phoneNoController,
-                                  keyboardType: TextInputType.number,
+                                  keyboardType: TextInputType.phone,
                                   cursorColor: Colors.white,
                                   enableSuggestions: true,
                                   autocorrect: true,
                                   style: TextStyle(color: Colors.white.withOpacity(0.9)),
                                   decoration: InputDecoration(
                                     labelText: "Enter Phone Number",
+                                    hintText: '+923431234567',
                                     labelStyle: TextStyle(color: Colors.white.withOpacity(0.9)),
                                     filled: true,
                                     floatingLabelBehavior: FloatingLabelBehavior.never,
@@ -242,8 +241,8 @@ class _BusinessOwnerSignUpState extends State<BusinessOwnerSignUp> {
                                     ),
                                   ),
                                   validator: (value){
-                                    if (value!.isEmpty){
-                                      return 'Enter your phone number';
+                                    if (value != null && value.length != 13){
+                                      return 'Enter your valid number';
                                     } else {
                                       return null;
                                     }
@@ -334,6 +333,9 @@ class _BusinessOwnerSignUpState extends State<BusinessOwnerSignUp> {
                           onTap: () async{
                             if(_formKey.currentState!.validate()){
                               if (_passwordController.text.toString() == _confirmController.text.toString()){
+                                setState(() {
+                                  loading = true ;
+                                });
                                 signUp(_emailController.text, _passwordController.text, role, _firstNameController.text, _lastNameController.text);
                                 setState(() {
                                   loading = true ;

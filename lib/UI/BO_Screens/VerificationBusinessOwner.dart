@@ -5,7 +5,6 @@ import 'package:pinput/pinput.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wheel_for_a_while/UI/Authentication/BusinessOwnerSignUp.dart';
 import 'package:wheel_for_a_while/UI/BO_Screens/BO_HomePage.dart';
-import 'package:wheel_for_a_while/UI/Screens/HomePage.dart';
 import 'package:wheel_for_a_while/UI/Widgets/hexStringToColor.dart';
 import 'package:wheel_for_a_while/UI/Widgets/imagesWidget.dart';
 import 'package:wheel_for_a_while/UI/utils/utilities.dart';
@@ -115,18 +114,6 @@ class _VerificationBusinessOwnerState extends State<VerificationBusinessOwner> {
                   )),
               const SizedBox(
                 height: 35,
-              ),
-              const Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    "RESEND",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800),
-                  )),
-              const SizedBox(
-                height: 28,
               ),
               Align(
                 alignment: Alignment.center,
