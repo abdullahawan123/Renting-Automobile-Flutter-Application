@@ -1,16 +1,105 @@
-# wheel_for_a_while
+🚗 Wheel For a While
+Renting Automobile Flutter Application
 
-A new Flutter project.
+Wheel For a While is a cross-platform car rental mobile application developed using Flutter and Dart as a Final Year Project (FYP). The application provides a seamless and user-friendly experience for browsing, booking, and managing automobile rentals.
 
-## Getting Started
+📱 Features
 
-This project is a starting point for a Flutter application.
+User Registration and Login
 
-A few resources to get you started if this is your first Flutter project:
+Browse Available Cars
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+View Car Details (price, specifications, images)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Easy Booking System
+
+Profile Management
+
+Booking History Tracking
+
+Clean and Responsive UI
+
+Cross-platform Support (Android & iOS)
+
+🛠️ Tech Stack
+
+Flutter
+
+Dart
+
+Material Design UI
+
+Stateful/Stateless Widgets
+
+Structured Project Architecture
+
+📂 Project Structure
+
+The project follows a clean and organized structure for better readability and scalability:
+
+lib/
+│── main.dart
+│── screens/
+│── widgets/
+│── models/
+│── services/
+
+
+The structure makes it easy to extend the app with additional features such as payment integration, backend APIs, GPS tracking, or real-time notifications.
+
+🚀 Getting Started
+Prerequisites
+
+Flutter SDK installed
+
+Android Studio / VS Code
+
+Emulator or Physical Device
+
+Installation
+
+Clone the repository:
+
+git clone https://github.com/abdullahawan123/Renting-Automobile-Flutter-Application.git
+
+
+Navigate to the project directory:
+
+cd Renting-Automobile-Flutter-Application
+
+
+Install dependencies:
+
+flutter pub get
+
+
+Run the application:
+
+flutter run
+
+📸 Screenshots
+
+(Add your app screenshots here)
+
+assets/screenshots/home.png
+assets/screenshots/details.png
+assets/screenshots/booking.png
+
+🎯 Future Improvements
+
+Payment Gateway Integration
+
+Backend API Integration
+
+Real-Time Notifications
+
+Location & GPS Tracking
+
+Admin Panel
+
+Rating & Review System
+
+👨‍💻 Author
+
+Abdullah Awan
+Flutter Developer
